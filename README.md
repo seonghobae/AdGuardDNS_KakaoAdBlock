@@ -1,0 +1,1 @@
+# AdGuardDNS_KakaoAdBlock
