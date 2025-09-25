@@ -1,0 +1,1 @@
+../../.cursor/.claude/agents/submodule-manager.md

@@ -1,0 +1,1 @@
+../../.cursor/.claude/agents/mcp-argument-validator.md

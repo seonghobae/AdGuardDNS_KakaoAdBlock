@@ -1,0 +1,1 @@
+../../.cursor/.claude/agents/code-block-syntax-validator.md

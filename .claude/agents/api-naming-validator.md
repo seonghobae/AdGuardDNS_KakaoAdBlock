@@ -1,0 +1,1 @@
+../../.cursor/.claude/agents/api-naming-validator.md

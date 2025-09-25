@@ -1,0 +1,1 @@
+../../.cursor/.claude/agents/file-type-linter.md

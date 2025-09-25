@@ -1,0 +1,1 @@
+../../.cursor/.claude/agents/self-critical-thinker.md

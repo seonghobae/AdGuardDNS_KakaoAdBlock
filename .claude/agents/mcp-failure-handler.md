@@ -1,0 +1,1 @@
+../../.cursor/.claude/agents/mcp-failure-handler.md

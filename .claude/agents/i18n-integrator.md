@@ -1,0 +1,1 @@
+../../.cursor/.claude/agents/i18n-integrator.md

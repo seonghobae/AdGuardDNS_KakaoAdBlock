@@ -1,0 +1,1 @@
+../../.cursor/.claude/agents/sequential-thinking-enforcer.md

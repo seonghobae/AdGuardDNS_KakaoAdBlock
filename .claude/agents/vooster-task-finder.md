@@ -1,0 +1,1 @@
+../../.cursor/.claude/agents/vooster-task-finder.md

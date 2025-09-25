@@ -1,0 +1,1 @@
+../../.cursor/.claude/agents/file-operation-guardian.md

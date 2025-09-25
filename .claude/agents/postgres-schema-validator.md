@@ -1,0 +1,1 @@
+../../.cursor/.claude/agents/postgres-schema-validator.md

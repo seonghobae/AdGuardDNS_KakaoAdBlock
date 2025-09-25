@@ -1,0 +1,1 @@
+../../.cursor/.claude/agents/universal-thinking-enforcer.md

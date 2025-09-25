@@ -1,0 +1,1 @@
+../../.cursor/.claude/agents/puppeteer-visual-tester.md

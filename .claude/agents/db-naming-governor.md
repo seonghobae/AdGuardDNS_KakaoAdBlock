@@ -1,0 +1,1 @@
+../../.cursor/.claude/agents/db-naming-governor.md
