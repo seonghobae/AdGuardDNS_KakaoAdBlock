@@ -46,10 +46,10 @@
 
 ##### 4. AdGuard 앱 (부분 유료)
 - **iOS**: DNS 필터링은 Pro 기능 (유료)
-- **Android**: DNS 필터링은 무료, 커스텀 필터는 프리미엄 기능
+- **Android**: 기본 DNS 보호는 무료, 고급 DNS 필터링 기능과 커스텀 필터는 프리미엄
 1. AdGuard 앱 설정
 2. "DNS 보호" → "DNS 필터링" → "DNS 필터"
-3. "필터 추가" → URL 입력
+3. "필터 추가" → URL 입력 (프리미엄 기능)
 
 #### 필터 직접 사용
 
@@ -111,7 +111,7 @@
 4. "Gateway" → "Firewall Policies" → DNS 정책 생성
 5. 조건: "Domain in list" → 생성한 리스트 선택
 6. 액션: "Block"
-- **제한**: 무료 플랜 1,000개 항목, 유료 5,000개
+- **제한**: 무료 플랜 최대 50명 사용자, 1000개 터널, 500개 애플리케이션
 
 #### ControlD (무료 플랜 있음)
 1. ControlD 대시보드 → 프로필 편집
@@ -144,7 +144,7 @@ URL로 제공되는 txt 필터 파일을 자동으로 읽고 업데이트하는 
 
 #### 🛠️ 부분 지원 (수동 또는 제한적)
 - **ControlD**: Custom Rules에 도메인 복사 (개별 추가)
-- **Cloudflare Zero Trust**: CSV 업로드, 최대 1,000개 제한
+- **Cloudflare Zero Trust**: CSV 업로드 (리스트 크기 제한은 문서화되지 않음)
 - **RethinkDNS**: 미래 유료 플랜에서 지원 예정
 
 #### ❌ 미지원
@@ -264,10 +264,10 @@ A precision AdGuard DNS filter for blocking **only** Kakao/Daum advertising and 
 
 ##### 4. AdGuard Apps (Partially Paid)
 - **iOS**: DNS filtering is a Pro feature (paid)
-- **Android**: DNS filtering is free, custom filters are premium
+- **Android**: Basic DNS protection is free, advanced DNS filtering and custom filters are premium
 1. Open AdGuard app settings
 2. "DNS protection" → "DNS filtering" → "DNS filters"
-3. "Add filter" → Enter URL
+3. "Add filter" → Enter URL (premium feature)
 
 #### Direct Filter Usage
 
@@ -329,7 +329,7 @@ To block ONLY Kakao ads precisely, you can disable all default filters and use o
 4. "Gateway" → "Firewall Policies" → Create DNS policy
 5. Condition: "Domain in list" → Select your list
 6. Action: "Block"
-- **Limit**: Free plan 1,000 items, paid 5,000
+- **Limit**: Free plan up to 50 users, 1000 tunnels, 500 applications
 
 #### ControlD (Free Plan Available)
 1. ControlD Dashboard → Edit Profile
@@ -362,7 +362,7 @@ Services that automatically read and update txt filter files from URLs:
 
 #### 🛠️ Partial Support (Manual or Limited)
 - **ControlD**: Copy domains to Custom Rules (individual addition)
-- **Cloudflare Zero Trust**: CSV upload, max 1,000 items limit
+- **Cloudflare Zero Trust**: CSV upload (list size limits not documented)
 - **RethinkDNS**: Custom lists planned for future paid plans
 
 #### ❌ Not Supported
