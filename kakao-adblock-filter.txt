@@ -2,7 +2,7 @@
 ! Description: Precision AdGuard DNS filter for blocking ONLY Kakao advertising/tracking domains
 ! Homepage: https://github.com/seonghobae/AdGuardDNS_KakaoAdBlock
 ! Version: 20250928
-! Last modified: 2025-09-28 12:51:27 UTC
+! Last modified: 2025-09-28 13:00:41 UTC
 ! Expires: 6 hours
 ! License: MIT
 !
@@ -13,8 +13,8 @@
 ! - PHILOSOPHY: Better to miss some ads than break legitimate functionality
 !
 ! Generated from 7 data sources
-! Total ad domains blocked: 7 (validated via DNS)
-! Domains removed as NXDOMAIN: 30
+! Total ad domains blocked: 3 (validated via DNS)
+! Domains removed as NXDOMAIN: 34
 ! Legitimate domains protected: 48
 !
 ! Data Sources:
@@ -38,11 +38,7 @@
 ||ads.kakaocdn.net^
 !
 ! === Daum Ad Domains ===
-||ad.daum.net^
-||banner.ad.daum.net^
 ||display.ad.daum.net^
 ||info.ad.daum.net^
-||mobile.ad.daum.net^
-||video.ad.daum.net^
 !
 ! === End of Filter ===
