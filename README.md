@@ -1,7 +1,7 @@
 # AdGuard DNS Kakao AdBlock Filter
 # AdGuard DNS 카카오 광고차단 필터
 
-[한국어](#한국어) | [English](#english)
+[🌐 웹사이트](https://seonghobae.github.io/AdGuardDNS_KakaoAdBlock/) | [한국어](#한국어) | [English](#english)
 
 ---
 
@@ -18,6 +18,10 @@
 - ✅ **검증**: 실제 DNS 조회로 도메인 활성 상태 확인
 
 ### 🚀 빠른 시작
+
+📋 **필터 URL**: `https://raw.githubusercontent.com/seonghobae/AdGuardDNS_KakaoAdBlock/main/kakao-adblock-filter.txt`
+
+🌐 **웹사이트**: [https://seonghobae.github.io/AdGuardDNS_KakaoAdBlock/](https://seonghobae.github.io/AdGuardDNS_KakaoAdBlock/)
 
 #### AdGuard DNS 서비스별 사용법
 
@@ -236,6 +240,10 @@ A precision AdGuard DNS filter for blocking **only** Kakao/Daum advertising and 
 - ✅ **VALIDATES**: Uses real DNS lookups to verify domain activity
 
 ### 🚀 Quick Start
+
+📋 **Filter URL**: `https://raw.githubusercontent.com/seonghobae/AdGuardDNS_KakaoAdBlock/main/kakao-adblock-filter.txt`
+
+🌐 **Website**: [https://seonghobae.github.io/AdGuardDNS_KakaoAdBlock/](https://seonghobae.github.io/AdGuardDNS_KakaoAdBlock/)
 
 #### How to Use with AdGuard DNS Services
 
