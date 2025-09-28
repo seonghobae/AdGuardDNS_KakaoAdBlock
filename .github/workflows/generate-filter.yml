@@ -2,8 +2,8 @@ name: Generate Kakao AdBlock Filter
 
 on:
   schedule:
-    # Run daily at 00:00 UTC (09:00 KST)
-    - cron: '0 0 * * *'
+    # Run every hour (only commits when changes detected)
+    - cron: '0 * * * *'
   workflow_dispatch:
   push:
     paths:
@@ -23,10 +23,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          node-version: '20'
+          python-version: '3.11'
 
       - name: Get current timestamp
         id: timestamp
@@ -34,130 +34,17 @@ jobs:
           echo "date=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_OUTPUT
           echo "short_date=$(date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
 
-      - name: Generate Kakao AdBlock Filter
+      - name: Generate Kakao AdBlock Filter from Sources
         run: |
-          # Create the filter file with header
-          cat > "${{ env.FILTER_FILE }}" << 'EOF'
-          ! Title: Kakao AdBlock Filter
-          ! Description: AdGuard DNS filter for blocking Kakao service advertisements
-          ! Homepage: https://github.com/${{ github.repository }}
-          ! Version: ${{ steps.timestamp.outputs.short_date }}
-          ! Last modified: ${{ steps.timestamp.outputs.date }}
-          ! Expires: 1 day
-          ! License: MIT
-          !
-          ! === Kakao Core Ad Domains ===
-          ||ad.kakao.com^
-          ||ads.kakao.com^
-          ||adtc.kakao.com^
-          ||track.kakao.com^
-          ||pixel.kakao.com^
-          ||dmp.kakao.com^
-          ||analytics.kakao.com^
-          ||metrics.kakao.com^
-          ||stats.kakao.com^
-          ||insight.kakao.com^
-          ||bizboard.kakao.com^
-          ||apis.moment.kakao.com^
-          !
-          ! === Daum Ad Domains ===
-          ||ad.daum.net^
-          ||ads.daum.net^
-          ||track.daum.net^
-          ||pixel.daum.net^
-          ||dmp.daum.net^
-          ||analytics.daum.net^
-          ||metrics.daum.net^
-          ||stats.daum.net^
-          ||adtrack.daum.net^
-          ||info.ad.daum.net^
-          ||bizboard.daum.net^
-          ||s1.daumcdn.net^$ctag=~device_phone
-          !
-          ! === KakaoTalk Ad Domains ===
-          ||ad.kakaotalk.com^
-          ||ads.kakaotalk.com^
-          ||track.kakaotalk.com^
-          ||pixel.kakaotalk.com^
-          ||analytics.kakaotalk.com^
-          ||metrics.kakaotalk.com^
-          !
-          ! === Kakao Service Ad Networks ===
-          ||ad.kakaocdn.net^
-          ||ads.kakaocdn.net^
-          ||track.kakaocdn.net^
-          ||ad.kakaocorp.com^
-          ||ads.kakaocorp.com^
-          ||track.kakaocorp.com^
-          ||ad.kakaomobility.com^
-          ||ads.kakaomobility.com^
-          ||track.kakaomobility.com^
-          ||ad.kakaopay.com^
-          ||ads.kakaopay.com^
-          ||track.kakaopay.com^
-          ||ad.kakaostory.com^
-          ||ads.kakaostory.com^
-          ||track.kakaostory.com^
-          ||ad.kakaomap.com^
-          ||ads.kakaomap.com^
-          ||track.kakaomap.com^
-          !
-          ! === Kakao Display Ad Networks ===
-          ||display.ad.kakao.com^
-          ||display.ad.daum.net^
-          ||banner.ad.kakao.com^
-          ||banner.ad.daum.net^
-          ||video.ad.kakao.com^
-          ||video.ad.daum.net^
-          ||native.ad.kakao.com^
-          ||native.ad.daum.net^
-          !
-          ! === Kakao Tracking & Analytics ===
-          ||collector.kakao.com^
-          ||collector.daum.net^
-          ||beacon.kakao.com^
-          ||beacon.daum.net^
-          ||log.kakao.com^
-          ||log.daum.net^
-          ||rum.kakao.com^
-          ||rum.daum.net^
-          ||weblog.kakao.com^
-          ||weblog.daum.net^
-          !
-          ! === Third-party Kakao Ad Partners ===
-          ||kakao.adverticum.net^
-          ||kakao.adnxs.com^
-          ||kakao.adsystem.com^
-          ||kakao.doubleclick.net^
-          ||daum.adverticum.net^
-          ||daum.adnxs.com^
-          ||daum.adsystem.com^
-          ||daum.doubleclick.net^
-          !
-          ! === Mobile App Ad SDKs ===
-          ||mobile.ad.kakao.com^
-          ||mobile.ads.kakao.com^
-          ||mobile.track.kakao.com^
-          ||sdk.ad.kakao.com^
-          ||sdk.ads.kakao.com^
-          ||sdk.track.kakao.com^
-          ||mobile.ad.daum.net^
-          ||mobile.ads.daum.net^
-          ||mobile.track.daum.net^
-          ||sdk.ad.daum.net^
-          ||sdk.ads.daum.net^
-          ||sdk.track.daum.net^
-          !
-          ! === Kakao E-commerce Ad Networks ===
-          ||ad.zigzag.kr^
-          ||ads.zigzag.kr^
-          ||track.zigzag.kr^
-          ||ad.brandi.co.kr^
-          ||ads.brandi.co.kr^
-          ||track.brandi.co.kr^
-          !
-          ! === End of Filter ===
-          EOF
+          echo "Collecting Kakao/Daum domains from real data sources..."
+          python3 scripts/collect_kakao_domains.py "${{ env.FILTER_FILE }}"
+
+          if [ ! -f "${{ env.FILTER_FILE }}" ]; then
+            echo "Error: Filter file was not generated"
+            exit 1
+          fi
+
+          echo "Filter generation completed"
 
       - name: Validate filter syntax
         run: |
@@ -173,13 +60,24 @@ jobs:
           RULE_COUNT=$(grep -c '^||.*\^' "${{ env.FILTER_FILE }}" || echo "0")
           echo "Generated $RULE_COUNT blocking rules"
 
+          # Check minimum rule count
+          if [ "$RULE_COUNT" -lt 10 ]; then
+            echo "Warning: Low rule count ($RULE_COUNT), expected at least 10 domains"
+          fi
+
           # Verify file is not empty
           if [ ! -s "${{ env.FILTER_FILE }}" ]; then
             echo "Error: Filter file is empty"
             exit 1
           fi
 
-          echo "Filter validation completed successfully"
+          # Check for required header information
+          if ! grep -q "Title:" "${{ env.FILTER_FILE }}"; then
+            echo "Error: Filter missing required title header"
+            exit 1
+          fi
+
+          echo "Filter validation completed successfully - $RULE_COUNT rules generated"
 
       - name: Check for changes
         id: changes
@@ -207,18 +105,27 @@ jobs:
         run: |
           # Generate filter statistics
           TOTAL_RULES=$(grep -c '^||.*\^' "${{ env.FILTER_FILE }}" || echo "0")
-          KAKAO_RULES=$(grep -c '^||.*kakao\.com\^' "${{ env.FILTER_FILE }}" || echo "0")
-          DAUM_RULES=$(grep -c '^||.*daum\.net\^' "${{ env.FILTER_FILE }}" || echo "0")
+          KAKAO_RULES=$(grep '^||.*kakao.*\^' "${{ env.FILTER_FILE }}" | wc -l || echo "0")
+          DAUM_RULES=$(grep '^||.*daum.*\^' "${{ env.FILTER_FILE }}" | wc -l || echo "0")
+          SOURCES=$(grep "Generated from" "${{ env.FILTER_FILE }}" | head -1 || echo "Unknown")
 
-          echo "## Filter Statistics" > filter-stats.md
+          echo "## Kakao AdBlock Filter Statistics" > filter-stats.md
           echo "- Total blocking rules: $TOTAL_RULES" >> filter-stats.md
-          echo "- Kakao domain rules: $KAKAO_RULES" >> filter-stats.md
-          echo "- Daum domain rules: $DAUM_RULES" >> filter-stats.md
+          echo "- Kakao-related domains: $KAKAO_RULES" >> filter-stats.md
+          echo "- Daum-related domains: $DAUM_RULES" >> filter-stats.md
+          echo "- $SOURCES" >> filter-stats.md
           echo "- Last updated: ${{ steps.timestamp.outputs.date }}" >> filter-stats.md
+          echo "" >> filter-stats.md
+          echo "## Data Sources" >> filter-stats.md
+          echo "- **List-KR**: Korean-language website filters list" >> filter-stats.md
+          echo "- **YousList**: Block filter for advertisements, mainly on Korean sites" >> filter-stats.md
           echo "" >> filter-stats.md
           echo "## Usage" >> filter-stats.md
           echo "Add this URL to your AdGuard DNS custom filters:" >> filter-stats.md
           echo "\`https://raw.githubusercontent.com/${{ github.repository }}/main/${{ env.FILTER_FILE }}\`" >> filter-stats.md
+          echo "" >> filter-stats.md
+          echo "## Auto-Update Schedule" >> filter-stats.md
+          echo "This filter is automatically updated every 6 hours to include the latest blocking rules from upstream sources." >> filter-stats.md
 
           cat filter-stats.md
 

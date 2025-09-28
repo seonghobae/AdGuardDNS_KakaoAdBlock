@@ -6,7 +6,7 @@
 
 다음 URL을 AdGuard DNS 사용자 정의 필터에 추가하세요:
 
-```
+```text
 https://raw.githubusercontent.com/seonghobae/AdGuardDNS_KakaoAdBlock/main/kakao-adblock-filter.txt
 ```
 
@@ -45,11 +45,19 @@ https://raw.githubusercontent.com/seonghobae/AdGuardDNS_KakaoAdBlock/main/kakao-
 - **모바일 SDK**: 모바일 앱 광고 SDK 관련 도메인
 - **추적 및 분석**: 사용자 추적 및 분석 도메인
 
+## 데이터 소스
+
+이 필터는 다음과 같은 신뢰할 수 있는 한국 커뮤니티 기반 데이터 소스에서 실시간으로 도메인을 수집합니다:
+
+- **[List-KR](https://github.com/List-KR/List-KR)**: AdGuard 팀과 한국 커뮤니티가 관리하는 한국어 웹사이트 필터
+- **[YousList](https://github.com/yous/YousList)**: 한국 사이트 광고 차단 전용 필터
+
 ## 필터 통계
 
-- 총 차단 규칙: **92개**
-- 자동 업데이트: **매일 00:00 UTC (09:00 KST)**
-- 필터 만료: **1일**
+- 총 차단 규칙: **25개+** (동적 생성)
+- 자동 업데이트: **6시간마다**
+- 필터 만료: **6시간**
+- 실시간 데이터 수집으로 항상 최신 상태 유지
 
 ## 문제 해결
 
@@ -57,7 +65,7 @@ https://raw.githubusercontent.com/seonghobae/AdGuardDNS_KakaoAdBlock/main/kakao-
 
 특정 Kakao 서비스에 문제가 발생하면, 해당 도메인을 화이트리스트에 추가할 수 있습니다:
 
-```
+```text
 @@||문제되는도메인.kakao.com^
 ```
 

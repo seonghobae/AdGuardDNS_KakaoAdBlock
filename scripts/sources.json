@@ -1,0 +1,116 @@
+{
+  "sources": [
+    {
+      "name": "List-KR-3rdParty",
+      "url": "https://raw.githubusercontent.com/List-KR/List-KR/master/adblocking/filters-share/3rd_domains.txt",
+      "type": "adblock",
+      "encoding": "utf-8",
+      "description": "List-KR 3rd party domain blocking rules"
+    },
+    {
+      "name": "List-KR-1stParty",
+      "url": "https://raw.githubusercontent.com/List-KR/List-KR/master/adblocking/filters-share/1st_domains.txt",
+      "type": "adblock",
+      "encoding": "utf-8",
+      "description": "List-KR 1st party domain blocking rules"
+    },
+    {
+      "name": "List-KR-Analytics",
+      "url": "https://raw.githubusercontent.com/List-KR/List-KR/master/analytics/filters-share/3rd_domains.txt",
+      "type": "adblock",
+      "encoding": "utf-8",
+      "description": "List-KR analytics tracking domain blocking rules"
+    },
+    {
+      "name": "YousList",
+      "url": "https://raw.githubusercontent.com/yous/YousList/master/youslist.txt",
+      "type": "adblock",
+      "encoding": "utf-8",
+      "description": "Block filter for advertisements, mainly on Korean sites"
+    },
+    {
+      "name": "List-KR-Annoyance",
+      "url": "https://raw.githubusercontent.com/List-KR/List-KR/master/annoyance/filters-share/3rd_domains.txt",
+      "type": "adblock",
+      "encoding": "utf-8",
+      "description": "List-KR annoyance blocking rules (often includes more ad domains)"
+    },
+    {
+      "name": "Korean-iOS-AdBlock",
+      "url": "https://raw.githubusercontent.com/grtcloud/korea-ios-content-blocker/master/korean_ads.txt",
+      "type": "adblock",
+      "encoding": "utf-8",
+      "description": "Korean iOS content blocker filter list"
+    },
+    {
+      "name": "NamuWiki-AdBlock",
+      "url": "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/annoyances.txt",
+      "type": "adblock",
+      "encoding": "utf-8",
+      "description": "uBlock Origin annoyances filter (includes Korean sites)"
+    }
+  ],
+  "kakao_patterns": [
+    "kakao\\.com",
+    "kakaocdn\\.net",
+    "kakaocorp\\.com",
+    "kakaoapi\\.com",
+    "kakaotalk\\.com",
+    "kakaomap\\.com",
+    "kakaopay\\.com",
+    "kakaostory\\.com",
+    "kakaomobility\\.com",
+    "kakaogames\\.com",
+    "kakaostatic\\.com",
+    "kakaowork\\.com",
+    "daum\\.net",
+    "daumcdn\\.net",
+    "daumkakao\\.com",
+    "daumcorp\\.com"
+  ],
+  "ad_keywords": [
+    "ad\\.",
+    "ads\\.",
+    "track\\.",
+    "pixel\\.",
+    "analytics\\.",
+    "metrics\\.",
+    "stats\\.",
+    "insight\\.",
+    "beacon\\.",
+    "collector\\.",
+    "log\\.",
+    "rum\\.",
+    "weblog\\.",
+    "bizboard\\.",
+    "dmp\\.",
+    "display\\.ad\\.",
+    "banner\\.ad\\.",
+    "video\\.ad\\.",
+    "native\\.ad\\.",
+    "mobile\\.ad\\.",
+    "sdk\\.ad\\.",
+    "adtrack\\.",
+    "info\\.ad\\.",
+    "adtc\\.",
+    "adserver\\.",
+    "adnxs\\.",
+    "adsystem\\.",
+    "doubleclick\\.",
+    "googlesyndication\\.",
+    "googleadservices\\."
+  ],
+  "filter_settings": {
+    "update_frequency": "6_hours",
+    "min_domains": 10,
+    "max_domains": 500,
+    "include_subdomains": true,
+    "validate_domains": true
+  },
+  "output_format": {
+    "type": "adguard_dns",
+    "include_comments": true,
+    "group_by_service": true,
+    "sort_alphabetically": true
+  }
+}
