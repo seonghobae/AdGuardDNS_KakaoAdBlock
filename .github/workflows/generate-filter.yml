@@ -22,6 +22,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: false  # Skip private submodule
 
       - name: Setup Python
         uses: actions/setup-python@v4
