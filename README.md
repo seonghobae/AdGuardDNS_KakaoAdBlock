@@ -21,28 +21,36 @@
 
 #### AdGuard DNS 서비스별 사용법
 
-##### 1. AdGuard DNS (adguard-dns.io) - 퍼블릭 DNS
-1. [adguard-dns.io](https://adguard-dns.io) 접속
-2. 대시보드에서 "블랙리스트" 탭 선택
-3. "커스텀 필터 추가" 클릭
-4. 다음 URL 입력:
-   ```
-   https://raw.githubusercontent.com/seonghobae/AdGuardDNS_KakaoAdBlock/develop/kakao-adblock-production.txt
-   ```
-5. 필터 이름: "Kakao AdBlock" 입력 후 저장
+##### 1. AdGuard 퍼블릭 DNS (무료, 커스텀 필터 불가)
+- **DNS 서버 주소만 변경**: 기기의 DNS를 AdGuard 퍼블릭 서버로 변경
+  - 일반: `94.140.14.14` / `94.140.15.15`
+  - 가족 보호: `94.140.14.15` / `94.140.15.16`
+- **주의**: 퍼블릭 DNS는 커스텀 필터를 추가할 수 없음
+- **대안**: 이미 카카오 광고를 일부 차단하지만 완벽하지 않음
 
-##### 2. AdGuard Home - 셀프 호스팅
-1. AdGuard Home 관리자 페이지 접속
-2. "필터" → "DNS 블랙리스트" 이동
-3. "블랙리스트 추가" → "URL 추가" 클릭
-4. 위 GitHub raw URL 입력
-5. 이름 설정 후 저장
+##### 2. AdGuard 개인 DNS (유료, 커스텀 필터 가능)
+1. [adguard-dns.io](https://adguard-dns.io) 가입 (유료 구독 필요)
+2. 대시보드 → "서버" → 원하는 서버 선택
+3. "블랙리스트" 클릭
+4. "블랙리스트 추가" → 다음 URL 입력:
+   ```
+   https://raw.githubusercontent.com/seonghobae/AdGuardDNS_KakaoAdBlock/main/kakao-adblock-production.txt
+   ```
+5. 이름: "Kakao AdBlock" 설정 후 저장
 
-##### 3. AdGuard 앱 (iOS/Android)
-1. AdGuard 앱 설정 열기
-2. "DNS 보호" → "DNS 필터링" → "DNS 필터" 선택
-3. "사용자 정의 필터 추가" 탭
-4. 위 URL 추가
+##### 3. AdGuard Home (무료 오픈소스, 셀프 호스팅)
+1. [AdGuard Home 설치](https://github.com/AdguardTeam/AdGuardHome#getting-started)
+2. 관리자 페이지 접속 (기본: http://localhost:3000)
+3. "필터" → "DNS 블랙리스트" 이동
+4. "블랙리스트 추가" → "URL 추가" 클릭
+5. 위 URL 입력 후 저장
+
+##### 4. AdGuard 앱 (부분 유료)
+- **iOS**: DNS 필터링은 Pro 기능 (유료)
+- **Android**: DNS 필터링은 무료, 커스텀 필터는 프리미엄 기능
+1. AdGuard 앱 설정
+2. "DNS 보호" → "DNS 필터링" → "DNS 필터"
+3. "필터 추가" → URL 입력
 
 #### 필터 직접 사용
 
@@ -137,28 +145,36 @@ A precision AdGuard DNS filter for blocking **only** Kakao/Daum advertising and 
 
 #### How to Use with AdGuard DNS Services
 
-##### 1. AdGuard DNS (adguard-dns.io) - Public DNS
-1. Go to [adguard-dns.io](https://adguard-dns.io)
-2. Navigate to your dashboard "Denylist" tab
-3. Click "Add custom filter"
-4. Enter this URL:
+##### 1. AdGuard Public DNS (Free, No Custom Filters)
+- **DNS-only solution**: Change your device DNS to AdGuard public servers
+  - Standard: `94.140.14.14` / `94.140.15.15`
+  - Family protection: `94.140.14.15` / `94.140.15.16`
+- **Note**: Public DNS cannot add custom filters
+- **Alternative**: Already blocks some Kakao ads but not comprehensive
+
+##### 2. AdGuard Private DNS (Paid, Custom Filters Supported)
+1. Sign up at [adguard-dns.io](https://adguard-dns.io) (subscription required)
+2. Dashboard → "Servers" → Select your server
+3. Click "Blocklists"
+4. "Add blocklist" → Enter this URL:
    ```
-   https://raw.githubusercontent.com/seonghobae/AdGuardDNS_KakaoAdBlock/develop/kakao-adblock-production.txt
+   https://raw.githubusercontent.com/seonghobae/AdGuardDNS_KakaoAdBlock/main/kakao-adblock-production.txt
    ```
 5. Name it "Kakao AdBlock" and save
 
-##### 2. AdGuard Home - Self-hosted
-1. Access your AdGuard Home admin panel
-2. Go to "Filters" → "DNS blocklists"
-3. Click "Add blocklist" → "Add a custom list"
-4. Enter the GitHub raw URL above
-5. Set a name and save
+##### 3. AdGuard Home (Free Open-source, Self-hosted)
+1. [Install AdGuard Home](https://github.com/AdguardTeam/AdGuardHome#getting-started)
+2. Access admin panel (default: http://localhost:3000)
+3. Go to "Filters" → "DNS blocklists"
+4. Click "Add blocklist" → "Add a custom list"
+5. Enter the URL above and save
 
-##### 3. AdGuard Apps (iOS/Android)
+##### 4. AdGuard Apps (Partially Paid)
+- **iOS**: DNS filtering is a Pro feature (paid)
+- **Android**: DNS filtering is free, custom filters are premium
 1. Open AdGuard app settings
-2. Go to "DNS protection" → "DNS filtering" → "DNS filters"
-3. Tap "Add custom filter"
-4. Add the URL above
+2. "DNS protection" → "DNS filtering" → "DNS filters"
+3. "Add filter" → Enter URL
 
 #### Direct Filter Usage
 
