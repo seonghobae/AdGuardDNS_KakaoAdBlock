@@ -60,9 +60,11 @@
 
 ### 🌐 다른 DNS 서비스에서 사용하기
 
-#### ⚠️ 기본 필터 비활성화 및 단독 사용
+#### ⚠️ 기본 필터 비활성화 및 단독 사용 (비권장)
 
-카카오 광고만 정확히 차단하고 싶은 경우, 기본 필터를 비활성화하고 이 필터만 사용할 수 있습니다:
+카카오 광고만 정확히 차단하고 싶은 경우, 기본 필터를 비활성화하고 이 필터만 사용할 수 있습니다.
+
+**주의**: 기본 필터를 끄면 일반적인 광고, 추적기, 악성 사이트 차단이 작동하지 않습니다. 보안상 권장하지 않으며, 특수한 목적이 있을 때만 사용하세요:
 
 **AdGuard Home**:
 1. "필터" → "DNS 블랙리스트"
@@ -249,9 +251,11 @@ A precision AdGuard DNS filter for blocking **only** Kakao/Daum advertising and 
 
 ### 🌐 Other DNS Services Usage
 
-#### ⚠️ Disable Default Filters for Standalone Use
+#### ⚠️ Disable Default Filters for Standalone Use (Not Recommended)
 
-To block ONLY Kakao ads precisely, you can disable all default filters and use only this filter:
+To block ONLY Kakao ads precisely, you can disable all default filters and use only this filter.
+
+**Warning**: Disabling default filters removes protection against general ads, trackers, and malicious sites. This is not recommended for security reasons. Use only for specific purposes:
 
 **AdGuard Home**:
 1. "Filters" → "DNS blocklists"
