@@ -55,8 +55,47 @@
 #### 필터 직접 사용
 
 1. **필터 다운로드**: [`kakao-adblock-production.txt`](kakao-adblock-production.txt)
-2. **수동 추가**: 다운로드한 파일 내용을 복사하여 직접 붙여넣기
+2. **수동 추가**: 다운로드한 파일 내용을 복사하여 직접 붙여녣기
 3. **자동 업데이트**: raw GitHub URL 사용 권장
+
+### 🌐 다른 DNS 서비스에서 사용하기
+
+#### NextDNS (부분 무료)
+- **문제점**: NextDNS는 커스텀 블록리스트 URL 추가를 공식 지원하지 않음
+- **대안 1**: Denylist에 도메인 개별 추가 (수동)
+  1. NextDNS 대시보드 → "Denylist"
+  2. 필터 파일에서 도메인만 추출하여 붙여넣기
+- **대안 2**: [GitHub](https://github.com/nextdns/blocklists)에 블록리스트 제안
+- **대안 3**: nextdnsctl 도구 사용 (비공식, 위험 감수)
+
+#### Pi-hole (무료 오픈소스)
+1. Pi-hole 관리자 패널 접속
+2. "Adlists" 메뉴 클릭
+3. URL 필드에 다음 입력:
+   ```
+   https://raw.githubusercontent.com/seonghobae/AdGuardDNS_KakaoAdBlock/main/kakao-adblock-production.txt
+   ```
+4. "Add" 클릭 후 "Tools" → "Update Gravity"
+
+#### Cloudflare Zero Trust (무료 체험)
+1. [Zero Trust 대시보드](https://one.dash.cloudflare.com) 접속
+2. "Gateway" → "Lists" → "Create list"
+3. 필터에서 도메인 복사하여 CSV로 업로드
+4. "Gateway" → "Firewall Policies" → DNS 정책 생성
+5. 조건: "Domain in list" → 생성한 리스트 선택
+6. 액션: "Block"
+- **제한**: 무료 플랜 1,000개 항목, 유료 5,000개
+
+#### ControlD (무료 플랜 있음)
+1. ControlD 대시보드 → 프로필 편집
+2. "Custom Rules" 섹션으로 이동
+3. 필터에서 도메인 복사하여 추가
+4. 와일드카드 지원: `*.kakaocdn.net`
+- **장점**: 와일드카드 및 TLD 차단 가능
+
+#### DNS.SB / Quad9 / OpenDNS
+- **커스텀 필터 불가**: 단순 DNS 서버로 커스텀 차단 불가
+- **대안**: AdGuard Home 또는 Pi-hole와 함께 사용
 
 #### 직접 필터 생성
 
@@ -181,6 +220,45 @@ A precision AdGuard DNS filter for blocking **only** Kakao/Daum advertising and 
 1. **Download the filter**: [`kakao-adblock-production.txt`](kakao-adblock-production.txt)
 2. **Manual addition**: Copy and paste the file contents directly
 3. **Auto-updates**: Use raw GitHub URL (recommended)
+
+### 🌐 Other DNS Services Usage
+
+#### NextDNS (Partially Free)
+- **Issue**: NextDNS doesn't officially support custom blocklist URLs
+- **Alternative 1**: Add domains individually to Denylist (manual)
+  1. NextDNS Dashboard → "Denylist"
+  2. Extract domains from filter file and paste
+- **Alternative 2**: Suggest blocklist on [GitHub](https://github.com/nextdns/blocklists)
+- **Alternative 3**: Use nextdnsctl tool (unofficial, at your own risk)
+
+#### Pi-hole (Free Open-source)
+1. Access Pi-hole admin panel
+2. Click "Adlists" menu
+3. Enter URL in the field:
+   ```
+   https://raw.githubusercontent.com/seonghobae/AdGuardDNS_KakaoAdBlock/main/kakao-adblock-production.txt
+   ```
+4. Click "Add" then "Tools" → "Update Gravity"
+
+#### Cloudflare Zero Trust (Free Tier Available)
+1. Go to [Zero Trust Dashboard](https://one.dash.cloudflare.com)
+2. "Gateway" → "Lists" → "Create list"
+3. Copy domains from filter and upload as CSV
+4. "Gateway" → "Firewall Policies" → Create DNS policy
+5. Condition: "Domain in list" → Select your list
+6. Action: "Block"
+- **Limit**: Free plan 1,000 items, paid 5,000
+
+#### ControlD (Free Plan Available)
+1. ControlD Dashboard → Edit Profile
+2. Navigate to "Custom Rules" section
+3. Copy domains from filter and add
+4. Wildcard support: `*.kakaocdn.net`
+- **Advantage**: Supports wildcards and TLD blocking
+
+#### DNS.SB / Quad9 / OpenDNS
+- **No custom filters**: Simple DNS servers without custom blocking
+- **Alternative**: Use with AdGuard Home or Pi-hole
 
 #### Generate Your Own Filter
 
