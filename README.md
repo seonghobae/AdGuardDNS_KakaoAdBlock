@@ -129,12 +129,18 @@
 URL로 제공되는 txt 필터 파일을 자동으로 읽고 업데이트하는 서비스:
 
 #### ✅ 완전 지원 (URL로 자동 업데이트)
-- **AdGuard Home**: 블록리스트 URL 직접 추가, 주기적 자동 업데이트
-- **Pi-hole**: Adlists에 URL 추가, gravity 업데이트로 적용
-- **Technitium DNS**: Settings → Blocking → Quick Add에서 URL 추가
-- **Blocky DNS**: 외부 http/https URL 지원
-- **pfSense + pfBlockerNG**: URL 기반 필터 리스트 지원
-- **OPNsense + Unbound**: 블록리스트 URL 구독 기능
+
+**🏠 셀프 호스팅 필요 (집에 서버/라우터 필요)**
+- **AdGuard Home**: 라즈베리파이, NAS, PC에 설치 필요
+- **Pi-hole**: 라즈베리파이, 리눅스 서버 필요
+- **Technitium DNS**: Windows/Mac/Linux 서버에 설치
+- **Blocky DNS**: Docker 컨테이너로 실행
+- **pfSense + pfBlockerNG**: pfSense 라우터/방화벽 필요
+- **OPNsense + Unbound**: OPNsense 라우터/방화벽 필요
+
+**☁️ 클라우드 서비스 (서버 불필요)**
+- 현재 txt URL 자동 읽기를 완전 지원하는 클라우드 서비스 없음
+- 대안: VPS(가상서버)에 AdGuard Home 설치
 
 #### 🛠️ 부분 지원 (수동 또는 제한적)
 - **ControlD**: Custom Rules에 도메인 복사 (개별 추가)
@@ -341,12 +347,18 @@ To block ONLY Kakao ads precisely, you can disable all default filters and use o
 Services that automatically read and update txt filter files from URLs:
 
 #### ✅ Full Support (Auto-update from URL)
-- **AdGuard Home**: Direct blocklist URL addition, periodic auto-updates
-- **Pi-hole**: Add URL to Adlists, apply via gravity update
-- **Technitium DNS**: Settings → Blocking → Quick Add for URL addition
-- **Blocky DNS**: Supports external http/https URLs
-- **pfSense + pfBlockerNG**: URL-based filter list support
-- **OPNsense + Unbound**: Blocklist URL subscription feature
+
+**🏠 Self-Hosting Required (Need Home Server/Router)**
+- **AdGuard Home**: Requires Raspberry Pi, NAS, or PC installation
+- **Pi-hole**: Needs Raspberry Pi or Linux server
+- **Technitium DNS**: Install on Windows/Mac/Linux server
+- **Blocky DNS**: Run as Docker container
+- **pfSense + pfBlockerNG**: Requires pfSense router/firewall
+- **OPNsense + Unbound**: Requires OPNsense router/firewall
+
+**☁️ Cloud Services (No Server Needed)**
+- No cloud services currently offer full txt URL auto-import
+- Alternative: Install AdGuard Home on a VPS (virtual server)
 
 #### 🛠️ Partial Support (Manual or Limited)
 - **ControlD**: Copy domains to Custom Rules (individual addition)
