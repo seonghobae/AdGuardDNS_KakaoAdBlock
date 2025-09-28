@@ -28,15 +28,14 @@
 - **주의**: 퍼블릭 DNS는 커스텀 필터를 추가할 수 없음
 - **대안**: 이미 카카오 광고를 일부 차단하지만 완벽하지 않음
 
-##### 2. AdGuard 개인 DNS (유료, 커스텀 필터 가능)
+##### 2. AdGuard 개인 DNS (유료, 커스텀 URL 불가)
 1. [adguard-dns.io](https://adguard-dns.io) 가입 (유료 구독 필요)
 2. 대시보드 → "서버" → 원하는 서버 선택
-3. "블랙리스트" 클릭
-4. "블랙리스트 추가" → 다음 URL 입력:
-   ```
-   https://raw.githubusercontent.com/seonghobae/AdGuardDNS_KakaoAdBlock/main/kakao-adblock-production.txt
-   ```
-5. 이름: "Kakao AdBlock" 설정 후 저장
+3. "사용자 규칙"(User rules) 클릭
+4. "새 규칙 추가" → 도메인 이름 입력
+5. 필터 파일에서 도메인을 하나씩 복사하여 추가 (수동)
+- **주의**: 커스텀 URL 블록리스트 추가 불가, 도메인 개별 입력만 가능
+- **대안**: 기본 제공 블록리스트 선택 또는 AdGuard Home 사용
 
 ##### 3. AdGuard Home (무료 오픈소스, 셀프 호스팅)
 1. [AdGuard Home 설치](https://github.com/AdguardTeam/AdGuardHome#getting-started)
@@ -219,15 +218,14 @@ A precision AdGuard DNS filter for blocking **only** Kakao/Daum advertising and 
 - **Note**: Public DNS cannot add custom filters
 - **Alternative**: Already blocks some Kakao ads but not comprehensive
 
-##### 2. AdGuard Private DNS (Paid, Custom Filters Supported)
+##### 2. AdGuard Private DNS (Paid, No Custom URL Support)
 1. Sign up at [adguard-dns.io](https://adguard-dns.io) (subscription required)
 2. Dashboard → "Servers" → Select your server
-3. Click "Blocklists"
-4. "Add blocklist" → Enter this URL:
-   ```
-   https://raw.githubusercontent.com/seonghobae/AdGuardDNS_KakaoAdBlock/main/kakao-adblock-production.txt
-   ```
-5. Name it "Kakao AdBlock" and save
+3. Click "User rules"
+4. "Add new rule" → Enter domain name
+5. Copy domains from filter file and add one by one (manual)
+- **Note**: Cannot add custom URL blocklists, only individual domain rules
+- **Alternative**: Use pre-installed blocklists or AdGuard Home
 
 ##### 3. AdGuard Home (Free Open-source, Self-hosted)
 1. [Install AdGuard Home](https://github.com/AdguardTeam/AdGuardHome#getting-started)
