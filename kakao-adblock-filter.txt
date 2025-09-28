@@ -2,7 +2,7 @@
 ! Description: Precision AdGuard DNS filter for blocking ONLY Kakao advertising/tracking domains
 ! Homepage: https://github.com/seonghobae/AdGuardDNS_KakaoAdBlock
 ! Version: 20250928
-! Last modified: 2025-09-28 09:40:31 UTC
+! Last modified: 2025-09-28 09:55:55 UTC
 ! Expires: 6 hours
 ! License: MIT
 !
@@ -12,8 +12,8 @@
 ! - PRESERVES: Essential services (kakao.com, accounts.kakao.com, pay.kakao.com, etc.)
 ! - PHILOSOPHY: Better to miss some ads than break legitimate functionality
 !
-! Generated from 2 data sources
-! Total ad domains blocked: 45
+! Generated from 7 data sources
+! Total ad domains blocked: 37
 ! Legitimate domains protected: 48
 !
 ! Data Sources:
@@ -35,17 +35,13 @@
 !
 ! === Kakao Ad Domains ===
 ||ad.kakao.com^
-||ad.kakaocdn.net^
 ||ad.kakaomap.com^
 ||ad.kakaopay.com^
 ||ad.kakaotalk.com^
-||adapi.kakao.com^
-||adm.kakao.com^
 ||ads.kakao.com^
 ||ads.kakaocdn.net^
 ||ads.kakaomap.com^
 ||ads.kakaotalk.com^
-||adserver.kakao.com^
 ||analytics.kakao.com^
 ||beacon.kakao.com^
 ||bizboard.kakao.com^
@@ -55,18 +51,15 @@
 ||pixel.kakao.com^
 ||pixel.kakaocdn.net^
 ||pixel.kakaotalk.com^
-||rum.kakao.com^
 ||track.kakao.com^
 ||track.kakaocdn.net^
+||track.kakaomap.com^
 ||track.kakaopay.com^
 ||track.kakaotalk.com^
 !
 ! === Daum Ad Domains ===
 ||ad.daum.net^
-||adapi.daum.net^
-||adm.daum.net^
 ||ads.daum.net^
-||adserver.daum.net^
 ||analytics.daum.net^
 ||banner.ad.daum.net^
 ||beacon.daum.net^
@@ -78,7 +71,6 @@
 ||metrics.daum.net^
 ||mobile.ad.daum.net^
 ||pixel.daum.net^
-||rum.daum.net^
 ||track.daum.net^
 ||video.ad.daum.net^
 !
