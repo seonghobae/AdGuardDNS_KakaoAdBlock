@@ -2,6 +2,7 @@
 """
 Kakao/Daum domain collector for AdGuard DNS filter
 Fetches and extracts Kakao/Daum related domains from multiple sources
+Validates domains via DNS to exclude NXDOMAIN (non-existent) domains
 """
 
 import json
@@ -9,9 +10,11 @@ import re
 import sys
 import urllib.request
 import urllib.error
+import socket
+import concurrent.futures
 from datetime import datetime
 from pathlib import Path
-from typing import Set, Dict
+from typing import Set, Dict, Optional, Tuple
 
 
 class KakaoDomainCollector:
@@ -19,6 +22,8 @@ class KakaoDomainCollector:
         self.sources_file = Path(sources_file)
         self.sources = self.load_sources()
         self.collected_domains: Set[str] = set()
+        self.validated_domains: Set[str] = set()  # Domains that actually exist
+        self.nxdomain_domains: Set[str] = set()  # Domains that don't exist
         self.whitelist_domains = self._get_whitelist_domains()
 
     def load_sources(self) -> Dict:
@@ -413,13 +418,78 @@ class KakaoDomainCollector:
         print(f"Added {added_count} validated known ad domains")
         print(f"Total collected ad domains: {len(self.collected_domains)}")
 
+    def validate_domain_dns(self, domain: str) -> Tuple[bool, Optional[str]]:
+        """
+        Validate if domain actually exists via DNS lookup.
+        Returns (exists, ip_address) tuple.
+        """
+        try:
+            # Try to resolve the domain
+            result = socket.gethostbyname(domain)
+            return (True, result)
+        except socket.gaierror as e:
+            # NXDOMAIN or other DNS errors
+            return (False, None)
+        except Exception as e:
+            # Other errors - treat as non-existent
+            return (False, None)
+
+    def validate_domains(self) -> None:
+        """
+        Validate all collected domains via DNS to exclude NXDOMAIN.
+        Uses concurrent lookups for performance.
+        """
+        if not self.collected_domains:
+            print("No domains to validate")
+            return
+
+        print(f"\nValidating {len(self.collected_domains)} domains via DNS...")
+        print("  (This may take a moment - checking if domains actually exist)")
+
+        # Use thread pool for concurrent DNS lookups
+        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+            # Submit all DNS lookups
+            future_to_domain = {
+                executor.submit(self.validate_domain_dns, domain): domain
+                for domain in self.collected_domains
+            }
+
+            # Process results as they complete
+            for future in concurrent.futures.as_completed(future_to_domain):
+                domain = future_to_domain[future]
+                try:
+                    exists, ip = future.result(timeout=5)
+                    if exists:
+                        self.validated_domains.add(domain)
+                        print(f"  ✅ ACTIVE: {domain} → {ip}")
+                    else:
+                        self.nxdomain_domains.add(domain)
+                        print(f"  ❌ NXDOMAIN: {domain} (doesn't exist)")
+                except Exception as e:
+                    # Timeout or other error - treat as NXDOMAIN
+                    self.nxdomain_domains.add(domain)
+                    print(f"  ⚠️  TIMEOUT: {domain} (treating as non-existent)")
+
+        # Summary
+        print(f"\n  DNS Validation Summary:")
+        print(f"    Active domains: {len(self.validated_domains)}")
+        print(f"    Non-existent domains: {len(self.nxdomain_domains)}")
+
+        if self.nxdomain_domains:
+            print(f"\n  Removed {len(self.nxdomain_domains)} NXDOMAIN domains:")
+            for domain in sorted(self.nxdomain_domains)[:10]:  # Show first 10
+                print(f"    - {domain}")
+            if len(self.nxdomain_domains) > 10:
+                print(f"    ... and {len(self.nxdomain_domains) - 10} more")
+
     def generate_adguard_filter(self) -> str:
         """Generate AdGuard DNS filter format"""
-        if not self.collected_domains:
+        # Use only validated domains (that actually exist)
+        if not self.validated_domains:
             return ""
 
         # Sort domains for consistent output
-        sorted_domains = sorted(self.collected_domains)
+        sorted_domains = sorted(self.validated_domains)
 
         # Generate header
         timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
@@ -441,7 +511,8 @@ class KakaoDomainCollector:
             "! - PHILOSOPHY: Better to miss some ads than break legitimate functionality",
             "!",
             f"! Generated from {len(self.sources.get('sources', []))} data sources",
-            f"! Total ad domains blocked: {len(sorted_domains)}",
+            f"! Total ad domains blocked: {len(sorted_domains)} (validated via DNS)",
+            f"! Domains removed as NXDOMAIN: {len(self.nxdomain_domains)}",
             f"! Legitimate domains protected: {len(self.whitelist_domains)}",
             "!",
             "! Data Sources:",
@@ -537,14 +608,19 @@ def main():
     print("\n2. Adding known ad domains...")
     collector.add_known_domains()
 
+    # Validate domains via DNS
+    print("\n3. Validating domains via DNS...")
+    collector.validate_domains()
+
     # Generate and save filter
-    print("\n3. Generating filter...")
+    print("\n4. Generating filter...")
     if collector.save_filter(output_file):
         print("\n✅ SUCCESS: Precision filter generated")
         print(f"📁 File: {output_file}")
-        print(f"🚫 Ad domains blocked: {len(collector.collected_domains)}")
+        print(f"🚫 Ad domains blocked: {len(collector.validated_domains)} (DNS validated)")
+        print(f"❌ Domains removed (NXDOMAIN): {len(collector.nxdomain_domains)}")
         print(f"✅ Legitimate domains protected: {len(collector.whitelist_domains)}")
-        print("\n🎯 PHILOSOPHY: Precision over coverage - better to miss ads than break services")
+        print("\n🎯 PHILOSOPHY: Precision over coverage - only blocking domains that actually exist")
         return 0
     else:
         print("❌ Filter generation failed")

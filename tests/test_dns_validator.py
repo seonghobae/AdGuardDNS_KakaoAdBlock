@@ -51,23 +51,23 @@ class TestDNSValidator(unittest.TestCase):
 
         with open(self.filter_file, 'r', encoding='utf-8') as f:
             content = f.read()
-            self.assertIn('||ad.kakao.com^', content,
-                         "Filter should contain ad.kakao.com")
-            self.assertIn('||ads.kakao.com^', content,
-                         "Filter should contain ads.kakao.com")
+            # Updated: Check for domains that actually exist after DNS validation
+            self.assertIn('||ads.kakaocdn.net^', content,
+                         "Filter should contain ads.kakaocdn.net")
+            self.assertIn('||ad.daum.net^', content,
+                         "Filter should contain ad.daum.net")
 
     def test_blocked_domains_parsed(self):
         """Test that blocked domains are correctly parsed from filter"""
         self.assertGreater(len(self.blocked_domains), 0,
                           "Should have parsed some blocked domains")
 
-        # Check known ad domains are in blocked list
+        # Check domains that actually exist (DNS validated) are in blocked list
         expected_blocked = [
-            'ad.kakao.com',
-            'ads.kakao.com',
-            'track.kakao.com',
-            'ad.daum.net',
-            'ads.daum.net'
+            'ads.kakaocdn.net',  # Active domain
+            'ad.daum.net',       # Active domain
+            'display.ad.daum.net',  # Active domain
+            'info.ad.daum.net'   # Active domain
         ]
 
         for domain in expected_blocked:
@@ -108,12 +108,12 @@ class TestDNSValidator(unittest.TestCase):
 
         validator = DNSValidator(self.filter_file)
 
-        # Test blocked domains
+        # Test blocked domains that actually exist
         blocked_test_cases = [
-            'ad.kakao.com',
-            'ads.kakao.com',
-            'track.kakao.com',
-            'pixel.kakao.com'
+            'ads.kakaocdn.net',     # Active Kakao CDN ad domain
+            'ad.daum.net',          # Active Daum ad domain
+            'display.ad.daum.net',  # Active Daum display ad
+            'info.ad.daum.net'      # Active Daum ad info
         ]
 
         for domain in blocked_test_cases:
@@ -148,11 +148,11 @@ class TestDNSValidator(unittest.TestCase):
 
         validator = DNSValidator(self.filter_file)
 
-        # Test subdomains of blocked domains
+        # Test subdomains of blocked domains that exist
         subdomain_test_cases = [
-            'sub.ad.kakao.com',
-            'test.ads.kakao.com',
-            'analytics.track.kakao.com'
+            'sub.ads.kakaocdn.net',
+            'test.ad.daum.net',
+            'analytics.display.ad.daum.net'
         ]
 
         for domain in subdomain_test_cases:
@@ -166,13 +166,13 @@ class TestDNSValidator(unittest.TestCase):
 
         validator = DNSValidator(self.filter_file)
 
-        # These should be blocked based on patterns
+        # These should be blocked based on patterns (only existing domains)
         pattern_blocked = [
-            'ad.kakao.com',
-            'ads.daum.net',
-            'track.kakao.com',
-            'pixel.kakao.com',
-            'analytics.kakao.com'
+            'ads.kakaocdn.net',
+            'ad.daum.net',
+            'display.ad.daum.net',
+            'banner.ad.daum.net',
+            'video.ad.daum.net'
         ]
 
         for domain in pattern_blocked:
@@ -210,14 +210,14 @@ class TestDNSValidator(unittest.TestCase):
 
         validator = DNSValidator(self.filter_file)
 
-        # Mix of blocked and allowed domains
+        # Mix of blocked (existing) and allowed domains
         test_domains = [
-            ('ad.kakao.com', None),
-            ('kakao.com', '127.0.0.1'),
-            ('ads.daum.net', None),
-            ('daum.net', '127.0.0.1'),
-            ('track.kakao.com', None),
-            ('map.kakao.com', '127.0.0.1'),
+            ('ads.kakaocdn.net', None),     # Blocked (exists)
+            ('kakao.com', '127.0.0.1'),     # Allowed
+            ('ad.daum.net', None),          # Blocked (exists)
+            ('daum.net', '127.0.0.1'),      # Allowed
+            ('display.ad.daum.net', None),  # Blocked (exists)
+            ('map.kakao.com', '127.0.0.1'), # Allowed
         ] * 10  # Repeat for more concurrent tests
 
         def query_domain(domain_tuple):
@@ -241,10 +241,10 @@ class TestDNSValidator(unittest.TestCase):
         validator.reset_stats()
 
         # Make some queries
-        validator.resolve('ad.kakao.com')  # Blocked
-        validator.resolve('kakao.com')  # Allowed
-        validator.resolve('ads.kakao.com')  # Blocked
-        validator.resolve('pay.kakao.com')  # Allowed
+        validator.resolve('ads.kakaocdn.net')  # Blocked (exists)
+        validator.resolve('kakao.com')         # Allowed
+        validator.resolve('ad.daum.net')       # Blocked (exists)
+        validator.resolve('pay.kakao.com')     # Allowed
 
         stats = validator.get_stats()
 
@@ -285,10 +285,10 @@ class TestDNSValidatorIntegration(unittest.TestCase):
 
         # Test with mock DNS client
         test_cases = [
-            ('ad.kakao.com', False),  # Should be blocked
-            ('kakao.com', True),  # Should be allowed
-            ('ads.daum.net', False),  # Should be blocked
-            ('daum.net', True),  # Should be allowed
+            ('ads.kakaocdn.net', False),  # Should be blocked (exists)
+            ('kakao.com', True),          # Should be allowed
+            ('ad.daum.net', False),       # Should be blocked (exists)
+            ('daum.net', True),           # Should be allowed
         ]
 
         for domain, should_resolve in test_cases:
