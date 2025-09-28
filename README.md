@@ -426,6 +426,29 @@ Essential Kakao services that are **always preserved**:
 
 [Full list of 48 protected domains](scripts/collect_kakao_domains.py#L109-L191)
 
+### 🧪 Testing & Validation
+
+#### DNS Validation Server (Testing Only)
+
+Test the filter behavior with our DNS validation server:
+
+```bash
+# Run tests to verify filter correctness
+python3 -m pytest tests/test_dns_validator.py -v
+
+# Quick validation test
+python3 scripts/dns_validator.py --test
+
+# Start validation server (port 15353)
+python3 scripts/dns_validator.py
+
+# Test with dig (in another terminal)
+dig @127.0.0.1 -p 15353 ad.kakao.com    # Should be BLOCKED
+dig @127.0.0.1 -p 15353 kakao.com       # Should be ALLOWED
+```
+
+**Note**: This server is for testing/validation only, not for production use.
+
 ### 🔧 Advanced Usage
 
 #### Domain Validation
