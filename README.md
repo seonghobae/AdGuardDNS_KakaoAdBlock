@@ -60,6 +60,32 @@
 
 ### 🌐 다른 DNS 서비스에서 사용하기
 
+#### ⚠️ 기본 필터 비활성화 및 단독 사용
+
+카카오 광고만 정확히 차단하고 싶은 경우, 기본 필터를 비활성화하고 이 필터만 사용할 수 있습니다:
+
+**AdGuard Home**:
+1. "필터" → "DNS 블랙리스트"
+2. 기본 필터 체크 해제 (AdGuard DNS filter 등)
+3. 카카오 필터만 추가하여 사용
+
+**Pi-hole**:
+1. 모든 기본 리스트 제거:
+   ```bash
+   sudo sqlite3 /etc/pihole/gravity.db "DELETE FROM adlist"
+   ```
+2. 카카오 필터만 추가
+3. "Tools" → "Update Gravity"
+
+**NextDNS**:
+1. 필터 없는 프로필 생성
+2. Denylist에만 카카오 도메인 추가
+3. 모든 블록리스트 비활성화
+
+**ControlD**:
+1. 모든 Native/3rd Party 필터 끄기
+2. Custom Rules에만 카카오 도메인 추가
+
 #### NextDNS (부분 무료)
 - **문제점**: NextDNS는 커스텀 블록리스트 URL 추가를 공식 지원하지 않음
 - **대안 1**: Denylist에 도메인 개별 추가 (수동)
@@ -222,6 +248,32 @@ A precision AdGuard DNS filter for blocking **only** Kakao/Daum advertising and 
 3. **Auto-updates**: Use raw GitHub URL (recommended)
 
 ### 🌐 Other DNS Services Usage
+
+#### ⚠️ Disable Default Filters for Standalone Use
+
+To block ONLY Kakao ads precisely, you can disable all default filters and use only this filter:
+
+**AdGuard Home**:
+1. "Filters" → "DNS blocklists"
+2. Uncheck default filters (AdGuard DNS filter, etc.)
+3. Add only Kakao filter
+
+**Pi-hole**:
+1. Remove all default lists:
+   ```bash
+   sudo sqlite3 /etc/pihole/gravity.db "DELETE FROM adlist"
+   ```
+2. Add only Kakao filter
+3. "Tools" → "Update Gravity"
+
+**NextDNS**:
+1. Create profile without filters
+2. Add only Kakao domains to Denylist
+3. Disable all blocklists
+
+**ControlD**:
+1. Turn off all Native/3rd Party filters
+2. Add only Kakao domains to Custom Rules
 
 #### NextDNS (Partially Free)
 - **Issue**: NextDNS doesn't officially support custom blocklist URLs
