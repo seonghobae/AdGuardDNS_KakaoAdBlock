@@ -216,9 +216,23 @@ Low success rates are **expected** - many historical ad domains are no longer ac
 - **Conservative approach**: Better to under-block than over-block
 - **Community validation**: Public issue tracking for transparency
 
+## ⚠️ 중요 고지 / Important Notice
+
+**이 Repository는 비영리, 비상업적으로 LLM Agent (Claude, Codex, Gemini)를 사용하여 운영 중이므로 이들이 실수할 수 있음을 알려드립니다.**
+
+**This repository is operated non-commercially using LLM Agents which may make mistakes.**
+
+자세한 내용은 [NOTICE.md](NOTICE.md)를 참고하세요.
+
 ## 📝 License
 
-MIT License - See [LICENSE](LICENSE) for details.
+**GNU GPL v3.0** - List-KR과의 호환성을 위해 GPL v3.0 라이선스 적용
+
+### Attribution
+- [List-KR](https://github.com/List-KR/List-KR) - GNU GPL v3.0
+- [YousList](https://github.com/yous/YousList) - CC BY-SA 4.0
+
+See [NOTICE.md](NOTICE.md) for details.
 
 ## 🔗 Related Projects
 

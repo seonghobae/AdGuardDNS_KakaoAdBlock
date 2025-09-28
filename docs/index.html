@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="카카오/다음 광고 도메인만 정밀 차단하는 AdGuard DNS 필터. 필수 서비스는 보호하면서 광고만 블록합니다.">
+    <meta name="keywords" content="AdGuard, DNS, 카카오, 다음, 광고차단, ad block, kakao, daum">
+    <meta name="author" content="SeongHo Bae">
+    <title>AdGuard DNS Kakao AdBlock Filter</title>
+
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="AdGuard DNS Kakao AdBlock Filter">
+    <meta property="og:description" content="카카오/다음 광고 도메인만 정밀 차단하는 AdGuard DNS 필터">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://seonghobae.github.io/AdGuardDNS_KakaoAdBlock/">
+    <meta property="og:image" content="https://repository-images.githubusercontent.com/seonghobae/AdGuardDNS_KakaoAdBlock">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFmMjkzNyIvPgo8cGF0aCBkPSJNOCAxMkgxNlYyMEg4VjEyWiIgZmlsbD0iIzEwYjk4MSIvPgo8cGF0aCBkPSJNMTggMTJIMjRWMjBIMThWMTJaIiBmaWxsPSIjZWY0NDQ0Ii8+CjxyZWN0IHg9IjEwIiB5PSI2IiB3aWR0aD0iMTIiIGhlaWdodD0iNCIgcng9IjIiIGZpbGw9IiM2MzY2ZjEiLz4KPC9zdmc+">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a'
+                        },
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        error: '#ef4444'
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Noto Sans KR"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Font Loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .dark .glass-effect {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .copy-button:hover { transform: translateY(-1px); }
+        .fade-in { animation: fadeIn 0.6s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-in { animation: slideIn 0.8s ease-out; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-effect">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <span class="font-bold text-lg">Kakao AdBlock</span>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <!-- Language Toggle -->
+                    <button id="langToggle" class="px-3 py-1 rounded-md text-sm font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                        <span id="langText">English</span>
+                    </button>
+
+                    <!-- Dark Mode Toggle -->
+                    <button id="darkModeToggle" class="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                        <svg id="sunIcon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 2L13.09 8.26L20 9L14 14.74L15.18 21.02L10 17.77L4.82 21.02L6 14.74L0 9L6.91 8.26L10 2Z"/>
+                        </svg>
+                        <svg id="moonIcon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                        </svg>
+                    </button>
+
+                    <!-- GitHub Link -->
+                    <a href="https://github.com/seonghobae/AdGuardDNS_KakaoAdBlock" target="_blank" class="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-24 pb-12 gradient-bg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center text-white fade-in">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                    <span data-ko="AdGuard DNS 카카오 광고차단 필터">AdGuard DNS Kakao AdBlock Filter</span>
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 opacity-90 max-w-4xl mx-auto leading-relaxed">
+                    <span data-ko="카카오/다음 광고 도메인만 정밀 차단하면서 필수 서비스는 완벽 보호">Precision filtering for Kakao/Daum ad domains while preserving essential services</span>
+                </p>
+
+                <!-- Quick Start Filter URL -->
+                <div class="max-w-4xl mx-auto mb-8">
+                    <div class="glass-effect rounded-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4">
+                            <span data-ko="🚀 빠른 시작 - 필터 URL 복사">🚀 Quick Start - Copy Filter URL</span>
+                        </h3>
+                        <div class="flex flex-col sm:flex-row gap-3 items-center">
+                            <div class="flex-1 bg-gray-800 rounded-lg p-3 font-mono text-sm text-gray-300 overflow-x-auto w-full">
+                                <code id="filterUrl">https://raw.githubusercontent.com/seonghobae/AdGuardDNS_KakaoAdBlock/main/kakao-adblock-filter.txt</code>
+                            </div>
+                            <button id="copyButton" class="copy-button px-6 py-3 bg-white text-gray-800 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-200 flex items-center space-x-2 whitespace-nowrap">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"/>
+                                    <path d="M3 5a2 2 0 012-2 3 3 0 003 3h6a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 10-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L14.586 13H19v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM15 11h2V8h-2v3z"/>
+                                </svg>
+                                <span data-ko="복사">Copy</span>
+                            </button>
+                        </div>
+                        <p class="text-sm opacity-75 mt-3">
+                            <span data-ko="AdGuard DNS 설정에서 '사용자 정의 필터'로 추가하세요">Add as a custom filter in your AdGuard DNS settings</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Statistics -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                    <div class="glass-effect rounded-lg p-6 slide-in">
+                        <div class="text-3xl font-bold text-red-300">37</div>
+                        <div class="text-sm opacity-75">
+                            <span data-ko="차단된 광고 도메인">Blocked Ad Domains</span>
+                        </div>
+                    </div>
+                    <div class="glass-effect rounded-lg p-6 slide-in" style="animation-delay: 0.1s">
+                        <div class="text-3xl font-bold text-green-300">48</div>
+                        <div class="text-sm opacity-75">
+                            <span data-ko="보호된 서비스">Protected Services</span>
+                        </div>
+                    </div>
+                    <div class="glass-effect rounded-lg p-6 slide-in" style="animation-delay: 0.2s">
+                        <div class="text-3xl font-bold text-blue-300">1h</div>
+                        <div class="text-sm opacity-75">
+                            <span data-ko="업데이트 주기">Update Frequency</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="py-16 bg-white dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                    <span data-ko="🛡️ 작동 원리">🛡️ How It Works</span>
+                </h2>
+                <p class="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                    <span data-ko="정밀한 패턴 매칭과 화이트리스트 우선 접근법으로 광고만 차단하고 필수 서비스는 보호합니다">Precision pattern matching with whitelist-first approach blocks only ads while preserving essential services</span>
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center fade-in">
+                    <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">
+                        <span data-ko="1. 데이터 수집">1. Data Collection</span>
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm">
+                        <span data-ko="한국 필터 목록에서 카카오/다음 관련 도메인을 수집합니다">Collect Kakao/Daum domains from Korean filter lists</span>
+                    </p>
+                </div>
+
+                <div class="text-center fade-in" style="animation-delay: 0.1s">
+                    <div class="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">
+                        <span data-ko="2. 패턴 매칭">2. Pattern Matching</span>
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm">
+                        <span data-ko="광고 키워드(ad., ads., track.)를 포함한 도메인만 선별합니다">Filter domains containing ad keywords (ad., ads., track.)</span>
+                    </p>
+                </div>
+
+                <div class="text-center fade-in" style="animation-delay: 0.2s">
+                    <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">
+                        <span data-ko="3. 화이트리스트 검증">3. Whitelist Validation</span>
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm">
+                        <span data-ko="48개 필수 서비스가 차단되지 않도록 보호합니다">Protect 48 essential services from being blocked</span>
+                    </p>
+                </div>
+
+                <div class="text-center fade-in" style="animation-delay: 0.3s">
+                    <div class="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">
+                        <span data-ko="4. DNS 검증">4. DNS Validation</span>
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm">
+                        <span data-ko="활성 도메인만 포함하여 필터 정확도를 높입니다">Include only active domains for filter accuracy</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Protected Services -->
+    <section class="py-16 bg-gray-50 dark:bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                    <span data-ko="✅ 보호된 서비스">✅ Protected Services</span>
+                </h2>
+                <p class="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                    <span data-ko="이 서비스들은 절대 차단되지 않습니다. 안전하게 사용하세요!">These services are never blocked. Use them safely!</span>
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-600 dark:text-blue-400">
+                        <span data-ko="🔐 인증 & 핵심 서비스">🔐 Authentication & Core</span>
+                    </h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center space-x-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span>kakao.com</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span>accounts.kakao.com</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span>kauth.kakao.com</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span>pay.kakao.com</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span>map.kakao.com</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span>talk.kakao.com</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4 text-purple-600 dark:text-purple-400">
+                        <span data-ko="🎵 미디어 & 엔터테인먼트">🎵 Media & Entertainment</span>
+                    </h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center space-x-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span>melon.com</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span>brunch.co.kr</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span>daum.net</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span>tv.kakao.com</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span>story.kakao.com</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4 text-green-600 dark:text-green-400">
+                        <span data-ko="💼 비즈니스 & 생산성">💼 Business & Productivity</span>
+                    </h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center space-x-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span>business.kakao.com</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span>work.kakao.com</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span>calendar.kakao.com</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span>keep.kakao.com</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span>developers.kakao.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="text-center mt-8">
+                <a href="https://github.com/seonghobae/AdGuardDNS_KakaoAdBlock#%EF%B8%8F-protected-services-never-blocked"
+                   target="_blank"
+                   class="inline-flex items-center space-x-2 text-blue-600 dark:text-blue-400 hover:underline">
+                    <span data-ko="전체 48개 보호 서비스 보기">View all 48 protected services</span>
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contributing -->
+    <section class="py-16 bg-white dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                    <span data-ko="🤝 기여하기">🤝 Contributing</span>
+                </h2>
+                <p class="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                    <span data-ko="새로운 광고 도메인을 발견했거나 문제를 찾았다면 언제든 제보해 주세요!">Found new ad domains or issues? Report them anytime!</span>
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="text-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <div class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">
+                        <span data-ko="🐛 광고 도메인 제보">🐛 Report Ad Domain</span>
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4 text-sm">
+                        <span data-ko="차단되어야 할 카카오/다음 광고 도메인을 발견했다면 제보해 주세요">Found Kakao/Daum ad domains that should be blocked?</span>
+                    </p>
+                    <a href="https://github.com/seonghobae/AdGuardDNS_KakaoAdBlock/issues/new?template=report-ad-domain.md"
+                       target="_blank"
+                       class="inline-block px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                        <span data-ko="도메인 제보하기">Report Domain</span>
+                    </a>
+                </div>
+
+                <div class="text-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">
+                        <span data-ko="💡 기능 요청">💡 Feature Request</span>
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4 text-sm">
+                        <span data-ko="새로운 기능이나 개선사항에 대한 아이디어가 있으신가요?">Have ideas for new features or improvements?</span>
+                    </p>
+                    <a href="https://github.com/seonghobae/AdGuardDNS_KakaoAdBlock/discussions"
+                       target="_blank"
+                       class="inline-block px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                        <span data-ko="의견 남기기">Share Ideas</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <span class="font-bold text-white">Kakao AdBlock</span>
+                    </div>
+                    <p class="text-sm leading-relaxed">
+                        <span data-ko="카카오/다음 서비스의 광고만 정밀 차단하는 AdGuard DNS 필터입니다. 필수 서비스는 완벽 보호됩니다.">Precision AdGuard DNS filter blocking only Kakao/Daum ads while protecting essential services.</span>
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-white mb-4">
+                        <span data-ko="빠른 링크">Quick Links</span>
+                    </h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="https://github.com/seonghobae/AdGuardDNS_KakaoAdBlock" class="hover:text-white transition-colors">GitHub Repository</a></li>
+                        <li><a href="https://github.com/seonghobae/AdGuardDNS_KakaoAdBlock/releases" class="hover:text-white transition-colors">
+                            <span data-ko="릴리즈">Releases</span>
+                        </a></li>
+                        <li><a href="https://github.com/seonghobae/AdGuardDNS_KakaoAdBlock/issues" class="hover:text-white transition-colors">
+                            <span data-ko="이슈 트래커">Issue Tracker</span>
+                        </a></li>
+                        <li><a href="https://github.com/seonghobae/AdGuardDNS_KakaoAdBlock/blob/main/README.md" class="hover:text-white transition-colors">
+                            <span data-ko="문서">Documentation</span>
+                        </a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-white mb-4">
+                        <span data-ko="통계">Statistics</span>
+                    </h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><span data-ko="차단 도메인: 37개">Blocked domains: 37</span></li>
+                        <li><span data-ko="보호 서비스: 48개">Protected services: 48</span></li>
+                        <li><span data-ko="업데이트: 매시간">Updates: Hourly</span></li>
+                        <li><span data-ko="마지막 업데이트: 2025-09-28">Last updated: 2025-09-28</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
+                <p>
+                    <span data-ko="MIT 라이선스로 제공됩니다. ©2025 SeongHo Bae">MIT License. ©2025 SeongHo Bae</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Language Toggle
+        let currentLang = 'en';
+        const translations = {
+            ko: {
+                // Navigation
+                'English': '한국어',
+
+                // Hero
+                'AdGuard DNS Kakao AdBlock Filter': 'AdGuard DNS 카카오 광고차단 필터',
+                'Precision filtering for Kakao/Daum ad domains while preserving essential services': '카카오/다음 광고 도메인만 정밀 차단하면서 필수 서비스는 완벽 보호',
+                '🚀 Quick Start - Copy Filter URL': '🚀 빠른 시작 - 필터 URL 복사',
+                'Add as a custom filter in your AdGuard DNS settings': 'AdGuard DNS 설정에서 \'사용자 정의 필터\'로 추가하세요',
+                'Copy': '복사',
+                'Copied!': '복사됨!',
+                'Blocked Ad Domains': '차단된 광고 도메인',
+                'Protected Services': '보호된 서비스',
+                'Update Frequency': '업데이트 주기',
+
+                // How it works
+                '🛡️ How It Works': '🛡️ 작동 원리',
+                'Precision pattern matching with whitelist-first approach blocks only ads while preserving essential services': '정밀한 패턴 매칭과 화이트리스트 우선 접근법으로 광고만 차단하고 필수 서비스는 보호합니다',
+                '1. Data Collection': '1. 데이터 수집',
+                'Collect Kakao/Daum domains from Korean filter lists': '한국 필터 목록에서 카카오/다음 관련 도메인을 수집합니다',
+                '2. Pattern Matching': '2. 패턴 매칭',
+                'Filter domains containing ad keywords (ad., ads., track.)': '광고 키워드(ad., ads., track.)를 포함한 도메인만 선별합니다',
+                '3. Whitelist Validation': '3. 화이트리스트 검증',
+                'Protect 48 essential services from being blocked': '48개 필수 서비스가 차단되지 않도록 보호합니다',
+                '4. DNS Validation': '4. DNS 검증',
+                'Include only active domains for filter accuracy': '활성 도메인만 포함하여 필터 정확도를 높입니다',
+
+                // Protected Services
+                '✅ Protected Services': '✅ 보호된 서비스',
+                'These services are never blocked. Use them safely!': '이 서비스들은 절대 차단되지 않습니다. 안전하게 사용하세요!',
+                '🔐 Authentication & Core': '🔐 인증 & 핵심 서비스',
+                '🎵 Media & Entertainment': '🎵 미디어 & 엔터테인먼트',
+                '💼 Business & Productivity': '💼 비즈니스 & 생산성',
+                'View all 48 protected services': '전체 48개 보호 서비스 보기',
+
+                // Contributing
+                '🤝 Contributing': '🤝 기여하기',
+                'Found new ad domains or issues? Report them anytime!': '새로운 광고 도메인을 발견했거나 문제를 찾았다면 언제든 제보해 주세요!',
+                '🐛 Report Ad Domain': '🐛 광고 도메인 제보',
+                'Found Kakao/Daum ad domains that should be blocked?': '차단되어야 할 카카오/다음 광고 도메인을 발견했다면 제보해 주세요',
+                'Report Domain': '도메인 제보하기',
+                '💡 Feature Request': '💡 기능 요청',
+                'Have ideas for new features or improvements?': '새로운 기능이나 개선사항에 대한 아이디어가 있으신가요?',
+                'Share Ideas': '의견 남기기',
+
+                // Footer
+                'Precision AdGuard DNS filter blocking only Kakao/Daum ads while protecting essential services.': '카카오/다음 서비스의 광고만 정밀 차단하는 AdGuard DNS 필터입니다. 필수 서비스는 완벽 보호됩니다.',
+                'Quick Links': '빠른 링크',
+                'Releases': '릴리즈',
+                'Issue Tracker': '이슈 트래커',
+                'Documentation': '문서',
+                'Statistics': '통계',
+                'Blocked domains: 37': '차단 도메인: 37개',
+                'Protected services: 48': '보호 서비스: 48개',
+                'Updates: Hourly': '업데이트: 매시간',
+                'Last updated: 2025-09-28': '마지막 업데이트: 2025-09-28',
+                'MIT License. ©2025 SeongHo Bae': 'MIT 라이선스로 제공됩니다. ©2025 SeongHo Bae'
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ko' : 'en';
+            document.documentElement.lang = currentLang;
+
+            if (currentLang === 'ko') {
+                // Translate to Korean
+                Object.entries(translations.ko).forEach(([en, ko]) => {
+                    document.querySelectorAll(`[data-ko="${ko}"]`).forEach(el => {
+                        el.textContent = ko;
+                    });
+                });
+                document.getElementById('langText').textContent = '한국어';
+            } else {
+                // Translate to English
+                document.querySelectorAll('[data-ko]').forEach(el => {
+                    const koText = el.getAttribute('data-ko');
+                    const enText = Object.keys(translations.ko).find(key => translations.ko[key] === koText);
+                    if (enText) {
+                        el.textContent = enText;
+                    }
+                });
+                document.getElementById('langText').textContent = 'English';
+            }
+        }
+
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+        }
+
+        // Copy Filter URL
+        function copyFilterUrl() {
+            const filterUrl = document.getElementById('filterUrl').textContent;
+            navigator.clipboard.writeText(filterUrl).then(() => {
+                const button = document.getElementById('copyButton');
+                const originalText = button.querySelector('span').textContent;
+                button.querySelector('span').textContent = currentLang === 'ko' ? '복사됨!' : 'Copied!';
+                button.classList.add('bg-green-500');
+                button.classList.remove('bg-white', 'text-gray-800');
+                button.classList.add('text-white');
+
+                setTimeout(() => {
+                    button.querySelector('span').textContent = originalText;
+                    button.classList.remove('bg-green-500', 'text-white');
+                    button.classList.add('bg-white', 'text-gray-800');
+                }, 2000);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set initial dark mode state
+            if (localStorage.getItem('darkMode') === 'true' ||
+                (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+
+            // Event listeners
+            document.getElementById('langToggle').addEventListener('click', toggleLanguage);
+            document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+            document.getElementById('copyButton').addEventListener('click', copyFilterUrl);
+
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.fade-in, .slide-in').forEach(el => {
+                el.style.animationPlayState = 'paused';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>

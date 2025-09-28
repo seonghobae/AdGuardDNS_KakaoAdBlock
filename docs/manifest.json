@@ -1,0 +1,26 @@
+{
+    "name": "AdGuard DNS Kakao AdBlock Filter",
+    "short_name": "Kakao AdBlock",
+    "description": "카카오/다음 광고 도메인만 정밀 차단하는 AdGuard DNS 필터",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#1f2937",
+    "theme_color": "#3b82f6",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iNDgiIGZpbGw9IiMxZjI5MzciLz4KPHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgeD0iMzIiIHk9IjMyIiB2aWV3Qm94PSIwIDAgMjAgMjAiIGZpbGw9IiMzYjgyZjYiPgo8cGF0aCBkPSJNOSAxMmwyIDIgNC00bTYgMmE5IDkgMCAxMS0xOCAwIDkgOSAwIDAxMTggMHoiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4KPC9zdmc+",
+            "sizes": "192x192",
+            "type": "image/svg+xml"
+        },
+        {
+            "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTI4IiBmaWxsPSIjMWYyOTM3Ii8+Cjxzdmcgd2lkdGg9IjM0NCIgaGVpZ2h0PSIzNDQiIHg9Ijg0IiB5PSI4NCIgdmlld0JveD0iMCAwIDIwIDIwIiBmaWxsPSIjM2I4MmY2Ij4KPHN0cm9rZSB3aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjwvcGF0aD4KPC9zdmc+CjxwYXRoIGQ9Ik05IDEybDIgMiA0LTRtNiAyYTkgOSAwIDExLTE4IDAgOSA5IDAgMDExOCAweiIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiCjwvc3ZnPgo=",
+            "sizes": "512x512",
+            "type": "image/svg+xml"
+        }
+    ],
+    "lang": "ko",
+    "dir": "ltr",
+    "categories": ["utilities", "productivity"],
+    "screenshots": []
+}
