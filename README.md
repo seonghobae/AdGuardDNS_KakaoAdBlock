@@ -124,6 +124,28 @@
 - **커스텀 필터 불가**: 단순 DNS 서버로 커스텀 차단 불가
 - **대안**: AdGuard Home 또는 Pi-hole와 함께 사용
 
+### 🔄 txt 파일 자동 읽기 지원 DNS 서비스
+
+URL로 제공되는 txt 필터 파일을 자동으로 읽고 업데이트하는 서비스:
+
+#### ✅ 완전 지원 (URL로 자동 업데이트)
+- **AdGuard Home**: 블록리스트 URL 직접 추가, 주기적 자동 업데이트
+- **Pi-hole**: Adlists에 URL 추가, gravity 업데이트로 적용
+- **Technitium DNS**: Settings → Blocking → Quick Add에서 URL 추가
+- **Blocky DNS**: 외부 http/https URL 지원
+- **pfSense + pfBlockerNG**: URL 기반 필터 리스트 지원
+- **OPNsense + Unbound**: 블록리스트 URL 구독 기능
+
+#### 🛠️ 부분 지원 (수동 또는 제한적)
+- **ControlD**: Custom Rules에 도메인 복사 (개별 추가)
+- **Cloudflare Zero Trust**: CSV 업로드, 최대 1,000개 제한
+- **RethinkDNS**: 미래 유료 플랜에서 지원 예정
+
+#### ❌ 미지원
+- **AdGuard DNS** (adguard-dns.io): User Rules로 개별 도메인만 가능
+- **NextDNS**: 커스텀 URL 불가, Denylist로 수동 추가
+- **기타 공공 DNS**: Quad9, Cloudflare 1.1.1.1 등
+
 #### 직접 필터 생성
 
 ```bash
@@ -313,6 +335,28 @@ To block ONLY Kakao ads precisely, you can disable all default filters and use o
 #### DNS.SB / Quad9 / OpenDNS
 - **No custom filters**: Simple DNS servers without custom blocking
 - **Alternative**: Use with AdGuard Home or Pi-hole
+
+### 🔄 DNS Services with Automatic txt File Import
+
+Services that automatically read and update txt filter files from URLs:
+
+#### ✅ Full Support (Auto-update from URL)
+- **AdGuard Home**: Direct blocklist URL addition, periodic auto-updates
+- **Pi-hole**: Add URL to Adlists, apply via gravity update
+- **Technitium DNS**: Settings → Blocking → Quick Add for URL addition
+- **Blocky DNS**: Supports external http/https URLs
+- **pfSense + pfBlockerNG**: URL-based filter list support
+- **OPNsense + Unbound**: Blocklist URL subscription feature
+
+#### 🛠️ Partial Support (Manual or Limited)
+- **ControlD**: Copy domains to Custom Rules (individual addition)
+- **Cloudflare Zero Trust**: CSV upload, max 1,000 items limit
+- **RethinkDNS**: Custom lists planned for future paid plans
+
+#### ❌ Not Supported
+- **AdGuard DNS** (adguard-dns.io): Only individual domains via User Rules
+- **NextDNS**: No custom URLs, manual Denylist only
+- **Other Public DNS**: Quad9, Cloudflare 1.1.1.1, etc.
 
 #### Generate Your Own Filter
 
