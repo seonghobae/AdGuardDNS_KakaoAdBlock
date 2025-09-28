@@ -1,0 +1,232 @@
+name: Generate Kakao AdBlock Filter
+
+on:
+  schedule:
+    # Run daily at 00:00 UTC (09:00 KST)
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/**'
+      - '.github/workflows/generate-filter.yml'
+
+env:
+  FILTER_FILE: 'kakao-adblock-filter.txt'
+
+jobs:
+  generate-filter:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Get current timestamp
+        id: timestamp
+        run: |
+          echo "date=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_OUTPUT
+          echo "short_date=$(date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
+
+      - name: Generate Kakao AdBlock Filter
+        run: |
+          # Create the filter file with header
+          cat > "${{ env.FILTER_FILE }}" << 'EOF'
+          ! Title: Kakao AdBlock Filter
+          ! Description: AdGuard DNS filter for blocking Kakao service advertisements
+          ! Homepage: https://github.com/${{ github.repository }}
+          ! Version: ${{ steps.timestamp.outputs.short_date }}
+          ! Last modified: ${{ steps.timestamp.outputs.date }}
+          ! Expires: 1 day
+          ! License: MIT
+          !
+          ! === Kakao Core Ad Domains ===
+          ||ad.kakao.com^
+          ||ads.kakao.com^
+          ||adtc.kakao.com^
+          ||track.kakao.com^
+          ||pixel.kakao.com^
+          ||dmp.kakao.com^
+          ||analytics.kakao.com^
+          ||metrics.kakao.com^
+          ||stats.kakao.com^
+          ||insight.kakao.com^
+          ||bizboard.kakao.com^
+          ||apis.moment.kakao.com^
+          !
+          ! === Daum Ad Domains ===
+          ||ad.daum.net^
+          ||ads.daum.net^
+          ||track.daum.net^
+          ||pixel.daum.net^
+          ||dmp.daum.net^
+          ||analytics.daum.net^
+          ||metrics.daum.net^
+          ||stats.daum.net^
+          ||adtrack.daum.net^
+          ||info.ad.daum.net^
+          ||bizboard.daum.net^
+          ||s1.daumcdn.net^$ctag=~device_phone
+          !
+          ! === KakaoTalk Ad Domains ===
+          ||ad.kakaotalk.com^
+          ||ads.kakaotalk.com^
+          ||track.kakaotalk.com^
+          ||pixel.kakaotalk.com^
+          ||analytics.kakaotalk.com^
+          ||metrics.kakaotalk.com^
+          !
+          ! === Kakao Service Ad Networks ===
+          ||ad.kakaocdn.net^
+          ||ads.kakaocdn.net^
+          ||track.kakaocdn.net^
+          ||ad.kakaocorp.com^
+          ||ads.kakaocorp.com^
+          ||track.kakaocorp.com^
+          ||ad.kakaomobility.com^
+          ||ads.kakaomobility.com^
+          ||track.kakaomobility.com^
+          ||ad.kakaopay.com^
+          ||ads.kakaopay.com^
+          ||track.kakaopay.com^
+          ||ad.kakaostory.com^
+          ||ads.kakaostory.com^
+          ||track.kakaostory.com^
+          ||ad.kakaomap.com^
+          ||ads.kakaomap.com^
+          ||track.kakaomap.com^
+          !
+          ! === Kakao Display Ad Networks ===
+          ||display.ad.kakao.com^
+          ||display.ad.daum.net^
+          ||banner.ad.kakao.com^
+          ||banner.ad.daum.net^
+          ||video.ad.kakao.com^
+          ||video.ad.daum.net^
+          ||native.ad.kakao.com^
+          ||native.ad.daum.net^
+          !
+          ! === Kakao Tracking & Analytics ===
+          ||collector.kakao.com^
+          ||collector.daum.net^
+          ||beacon.kakao.com^
+          ||beacon.daum.net^
+          ||log.kakao.com^
+          ||log.daum.net^
+          ||rum.kakao.com^
+          ||rum.daum.net^
+          ||weblog.kakao.com^
+          ||weblog.daum.net^
+          !
+          ! === Third-party Kakao Ad Partners ===
+          ||kakao.adverticum.net^
+          ||kakao.adnxs.com^
+          ||kakao.adsystem.com^
+          ||kakao.doubleclick.net^
+          ||daum.adverticum.net^
+          ||daum.adnxs.com^
+          ||daum.adsystem.com^
+          ||daum.doubleclick.net^
+          !
+          ! === Mobile App Ad SDKs ===
+          ||mobile.ad.kakao.com^
+          ||mobile.ads.kakao.com^
+          ||mobile.track.kakao.com^
+          ||sdk.ad.kakao.com^
+          ||sdk.ads.kakao.com^
+          ||sdk.track.kakao.com^
+          ||mobile.ad.daum.net^
+          ||mobile.ads.daum.net^
+          ||mobile.track.daum.net^
+          ||sdk.ad.daum.net^
+          ||sdk.ads.daum.net^
+          ||sdk.track.daum.net^
+          !
+          ! === Kakao E-commerce Ad Networks ===
+          ||ad.zigzag.kr^
+          ||ads.zigzag.kr^
+          ||track.zigzag.kr^
+          ||ad.brandi.co.kr^
+          ||ads.brandi.co.kr^
+          ||track.brandi.co.kr^
+          !
+          ! === End of Filter ===
+          EOF
+
+      - name: Validate filter syntax
+        run: |
+          # Basic syntax validation
+          echo "Validating filter syntax..."
+
+          # Check for proper AdGuard DNS syntax
+          if grep -E '^[^!#].*[^$]$' "${{ env.FILTER_FILE }}" | grep -v '||.*\^' | grep -v '^[a-zA-Z0-9.-]*$'; then
+            echo "Warning: Some lines may not follow proper AdGuard DNS syntax"
+          fi
+
+          # Count rules
+          RULE_COUNT=$(grep -c '^||.*\^' "${{ env.FILTER_FILE }}" || echo "0")
+          echo "Generated $RULE_COUNT blocking rules"
+
+          # Verify file is not empty
+          if [ ! -s "${{ env.FILTER_FILE }}" ]; then
+            echo "Error: Filter file is empty"
+            exit 1
+          fi
+
+          echo "Filter validation completed successfully"
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet HEAD -- "${{ env.FILTER_FILE }}"; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No changes detected in filter file"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Changes detected in filter file"
+            git diff --name-only HEAD -- "${{ env.FILTER_FILE }}"
+          fi
+
+      - name: Commit and push changes
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add "${{ env.FILTER_FILE }}"
+          git commit -m "chore: update Kakao AdBlock filter - ${{ steps.timestamp.outputs.date }}"
+          git push
+
+      - name: Create release asset info
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          # Generate filter statistics
+          TOTAL_RULES=$(grep -c '^||.*\^' "${{ env.FILTER_FILE }}" || echo "0")
+          KAKAO_RULES=$(grep -c '^||.*kakao\.com\^' "${{ env.FILTER_FILE }}" || echo "0")
+          DAUM_RULES=$(grep -c '^||.*daum\.net\^' "${{ env.FILTER_FILE }}" || echo "0")
+
+          echo "## Filter Statistics" > filter-stats.md
+          echo "- Total blocking rules: $TOTAL_RULES" >> filter-stats.md
+          echo "- Kakao domain rules: $KAKAO_RULES" >> filter-stats.md
+          echo "- Daum domain rules: $DAUM_RULES" >> filter-stats.md
+          echo "- Last updated: ${{ steps.timestamp.outputs.date }}" >> filter-stats.md
+          echo "" >> filter-stats.md
+          echo "## Usage" >> filter-stats.md
+          echo "Add this URL to your AdGuard DNS custom filters:" >> filter-stats.md
+          echo "\`https://raw.githubusercontent.com/${{ github.repository }}/main/${{ env.FILTER_FILE }}\`" >> filter-stats.md
+
+          cat filter-stats.md
+
+      - name: Upload filter as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kakao-adblock-filter-${{ steps.timestamp.outputs.short_date }}
+          path: |
+            ${{ env.FILTER_FILE }}
+            filter-stats.md
+          retention-days: 30

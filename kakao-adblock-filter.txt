@@ -1,0 +1,119 @@
+! Title: Kakao AdBlock Filter
+! Description: AdGuard DNS filter for blocking Kakao service advertisements
+! Homepage: https://github.com/seonghobae/AdGuardDNS_KakaoAdBlock
+! Version: 20240928
+! Last modified: 2024-09-28 09:00:00 UTC
+! Expires: 1 day
+! License: MIT
+!
+! === Kakao Core Ad Domains ===
+||ad.kakao.com^
+||ads.kakao.com^
+||adtc.kakao.com^
+||track.kakao.com^
+||pixel.kakao.com^
+||dmp.kakao.com^
+||analytics.kakao.com^
+||metrics.kakao.com^
+||stats.kakao.com^
+||insight.kakao.com^
+||bizboard.kakao.com^
+||apis.moment.kakao.com^
+!
+! === Daum Ad Domains ===
+||ad.daum.net^
+||ads.daum.net^
+||track.daum.net^
+||pixel.daum.net^
+||dmp.daum.net^
+||analytics.daum.net^
+||metrics.daum.net^
+||stats.daum.net^
+||adtrack.daum.net^
+||info.ad.daum.net^
+||bizboard.daum.net^
+||s1.daumcdn.net^$ctag=~device_phone
+!
+! === KakaoTalk Ad Domains ===
+||ad.kakaotalk.com^
+||ads.kakaotalk.com^
+||track.kakaotalk.com^
+||pixel.kakaotalk.com^
+||analytics.kakaotalk.com^
+||metrics.kakaotalk.com^
+!
+! === Kakao Service Ad Networks ===
+||ad.kakaocdn.net^
+||ads.kakaocdn.net^
+||track.kakaocdn.net^
+||ad.kakaocorp.com^
+||ads.kakaocorp.com^
+||track.kakaocorp.com^
+||ad.kakaomobility.com^
+||ads.kakaomobility.com^
+||track.kakaomobility.com^
+||ad.kakaopay.com^
+||ads.kakaopay.com^
+||track.kakaopay.com^
+||ad.kakaostory.com^
+||ads.kakaostory.com^
+||track.kakaostory.com^
+||ad.kakaomap.com^
+||ads.kakaomap.com^
+||track.kakaomap.com^
+!
+! === Kakao Display Ad Networks ===
+||display.ad.kakao.com^
+||display.ad.daum.net^
+||banner.ad.kakao.com^
+||banner.ad.daum.net^
+||video.ad.kakao.com^
+||video.ad.daum.net^
+||native.ad.kakao.com^
+||native.ad.daum.net^
+!
+! === Kakao Tracking & Analytics ===
+||collector.kakao.com^
+||collector.daum.net^
+||beacon.kakao.com^
+||beacon.daum.net^
+||log.kakao.com^
+||log.daum.net^
+||rum.kakao.com^
+||rum.daum.net^
+||weblog.kakao.com^
+||weblog.daum.net^
+!
+! === Third-party Kakao Ad Partners ===
+||kakao.adverticum.net^
+||kakao.adnxs.com^
+||kakao.adsystem.com^
+||kakao.doubleclick.net^
+||daum.adverticum.net^
+||daum.adnxs.com^
+||daum.adsystem.com^
+||daum.doubleclick.net^
+!
+! === Mobile App Ad SDKs ===
+||mobile.ad.kakao.com^
+||mobile.ads.kakao.com^
+||mobile.track.kakao.com^
+||sdk.ad.kakao.com^
+||sdk.ads.kakao.com^
+||sdk.track.kakao.com^
+||mobile.ad.daum.net^
+||mobile.ads.daum.net^
+||mobile.track.daum.net^
+||sdk.ad.daum.net^
+||sdk.ads.daum.net^
+||sdk.track.daum.net^
+!
+! === Kakao E-commerce Ad Networks ===
+||ad.zigzag.kr^
+||ads.zigzag.kr^
+||track.zigzag.kr^
+||ad.brandi.co.kr^
+||ads.brandi.co.kr^
+||track.brandi.co.kr^
+!
+! === End of Filter ===
