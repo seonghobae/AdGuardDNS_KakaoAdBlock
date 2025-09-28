@@ -48,6 +48,10 @@ jobs:
 
           echo "Filter generation completed"
 
+      - name: Install test dependencies
+        run: |
+          pip install pytest pytest-mock dnspython
+
       - name: Validate filter syntax
         run: |
           # Basic syntax validation
@@ -80,6 +84,22 @@ jobs:
           fi
 
           echo "Filter validation completed successfully - $RULE_COUNT rules generated"
+
+      - name: Run DNS validation tests
+        run: |
+          echo "Running DNS validation tests..."
+
+          # Run pytest tests if they exist
+          if [ -f "tests/test_dns_validator.py" ]; then
+            python3 -m pytest tests/test_dns_validator.py -v --tb=short
+          fi
+
+          # Run quick validation test
+          if [ -f "scripts/dns_validator.py" ]; then
+            echo ""
+            echo "Running quick domain validation..."
+            python3 scripts/dns_validator.py --test
+          fi
 
       - name: Check for changes
         id: changes

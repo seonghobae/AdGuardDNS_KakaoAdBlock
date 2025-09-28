@@ -1,0 +1,137 @@
+name: DNS Validation Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'scripts/**.py'
+      - 'tests/**.py'
+      - 'kakao-adblock-filter.txt'
+      - '.github/workflows/test.yml'
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11']
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install dnspython
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+
+      - name: Run DNS validation tests
+        run: |
+          echo "Running tests with Python ${{ matrix.python-version }}"
+          python -m pytest tests/test_dns_validator.py -v --tb=short
+
+      - name: Run domain validation check
+        run: |
+          echo ""
+          echo "=== Domain Validation Results ==="
+          python scripts/dns_validator.py --test
+
+      - name: Test DNS server startup
+        run: |
+          echo ""
+          echo "=== Testing DNS server startup ==="
+          timeout 5s python scripts/dns_validator.py || true
+          echo "DNS server startup test completed"
+
+      - name: Validate essential services protection
+        run: |
+          echo ""
+          echo "=== Validating Essential Services Protection ==="
+          python -c "
+import sys
+sys.path.insert(0, '.')
+from scripts.dns_validator import DNSValidator
+
+validator = DNSValidator('kakao-adblock-filter.txt')
+
+essential_services = [
+    'kakao.com',
+    'accounts.kakao.com',
+    'pay.kakao.com',
+    'map.kakao.com',
+    'daum.net'
+]
+
+print('Checking essential services are NOT blocked:')
+all_passed = True
+for domain in essential_services:
+    result = validator.resolve(domain)
+    status = '✅ PASS' if result else '❌ FAIL'
+    print(f'  {domain:<25} {status}')
+    if not result:
+        all_passed = False
+
+if not all_passed:
+    print('ERROR: Some essential services are blocked!')
+    sys.exit(1)
+else:
+    print('All essential services are protected! ✅')
+          "
+
+      - name: Validate ad domains blocking
+        run: |
+          echo ""
+          echo "=== Validating Ad Domains Blocking ==="
+          python -c "
+import sys
+sys.path.insert(0, '.')
+from scripts.dns_validator import DNSValidator
+
+validator = DNSValidator('kakao-adblock-filter.txt')
+
+ad_domains = [
+    'ad.kakao.com',
+    'ads.kakao.com',
+    'track.kakao.com',
+    'pixel.kakao.com',
+    'ad.daum.net'
+]
+
+print('Checking ad domains are blocked:')
+all_passed = True
+for domain in ad_domains:
+    result = validator.resolve(domain)
+    status = '✅ PASS' if not result else '❌ FAIL'
+    print(f'  {domain:<25} {status}')
+    if result:
+        all_passed = False
+
+if not all_passed:
+    print('ERROR: Some ad domains are NOT blocked!')
+    sys.exit(1)
+else:
+    print('All ad domains are blocked! ✅')
+          "
+
+      - name: Generate test report
+        if: always()
+        run: |
+          echo ""
+          echo "=== Test Summary ==="
+          echo "Python version: ${{ matrix.python-version }}"
+          echo "Filter file: kakao-adblock-filter.txt"
+
+          RULE_COUNT=$(grep -c '^||.*\^' kakao-adblock-filter.txt || echo "0")
+          echo "Total blocking rules: $RULE_COUNT"
+
+          echo ""
+          echo "Test suite completed!"
