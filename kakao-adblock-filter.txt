@@ -2,7 +2,7 @@
 ! Description: Precision AdGuard DNS filter for blocking ONLY Kakao advertising/tracking domains
 ! Homepage: https://github.com/seonghobae/AdGuardDNS_KakaoAdBlock
 ! Version: 20251004
-! Last modified: 2025-10-04 13:07:15 UTC
+! Last modified: 2025-10-04 14:04:51 UTC
 ! Expires: 6 hours
 ! License: MIT
 !
