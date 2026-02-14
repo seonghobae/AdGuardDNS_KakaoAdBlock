@@ -20,26 +20,29 @@ jobs:
       contents: write
 
     steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2
+        with:
+          egress-policy: audit
+
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: false  # Skip private submodule
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.11'
 
-      - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - name: Setup uv
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
 
       - name: Get current timestamp
         id: timestamp
         run: |
-          echo "date=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_OUTPUT
-          echo "short_date=$(date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
+          echo "date=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> "$GITHUB_OUTPUT"
+          echo "short_date=$(date -u '+%Y%m%d')" >> "$GITHUB_OUTPUT"
 
       - name: Install dependencies with uv
         run: |
@@ -116,10 +119,10 @@ jobs:
         id: changes
         run: |
           if git diff --quiet HEAD -- "${{ env.FILTER_FILE }}"; then
-            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "No changes detected in filter file"
           else
-            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "changed=true" >> "$GITHUB_OUTPUT"
             echo "Changes detected in filter file"
             git diff --name-only HEAD -- "${{ env.FILTER_FILE }}"
           fi
@@ -138,32 +141,34 @@ jobs:
         run: |
           # Generate filter statistics
           TOTAL_RULES=$(grep -c '^||.*\^' "${{ env.FILTER_FILE }}" || echo "0")
-          KAKAO_RULES=$(grep '^||.*kakao.*\^' "${{ env.FILTER_FILE }}" | wc -l || echo "0")
-          DAUM_RULES=$(grep '^||.*daum.*\^' "${{ env.FILTER_FILE }}" | wc -l || echo "0")
+          KAKAO_RULES=$(grep -c '^||.*kakao.*\^' "${{ env.FILTER_FILE }}" || echo "0")
+          DAUM_RULES=$(grep -c '^||.*daum.*\^' "${{ env.FILTER_FILE }}" || echo "0")
           SOURCES=$(grep "Generated from" "${{ env.FILTER_FILE }}" | head -1 || echo "Unknown")
 
-          echo "## Kakao AdBlock Filter Statistics" > filter-stats.md
-          echo "- Total blocking rules: $TOTAL_RULES" >> filter-stats.md
-          echo "- Kakao-related domains: $KAKAO_RULES" >> filter-stats.md
-          echo "- Daum-related domains: $DAUM_RULES" >> filter-stats.md
-          echo "- $SOURCES" >> filter-stats.md
-          echo "- Last updated: ${{ steps.timestamp.outputs.date }}" >> filter-stats.md
-          echo "" >> filter-stats.md
-          echo "## Data Sources" >> filter-stats.md
-          echo "- **List-KR**: Korean-language website filters list" >> filter-stats.md
-          echo "- **YousList**: Block filter for advertisements, mainly on Korean sites" >> filter-stats.md
-          echo "" >> filter-stats.md
-          echo "## Usage" >> filter-stats.md
-          echo "Add this URL to your AdGuard DNS custom filters:" >> filter-stats.md
-          echo "\`https://raw.githubusercontent.com/${{ github.repository }}/main/${{ env.FILTER_FILE }}\`" >> filter-stats.md
-          echo "" >> filter-stats.md
-          echo "## Auto-Update Schedule" >> filter-stats.md
-          echo "This filter is automatically updated every 6 hours to include the latest blocking rules from upstream sources." >> filter-stats.md
+          {
+            echo "## Kakao AdBlock Filter Statistics"
+            echo "- Total blocking rules: $TOTAL_RULES"
+            echo "- Kakao-related domains: $KAKAO_RULES"
+            echo "- Daum-related domains: $DAUM_RULES"
+            echo "- $SOURCES"
+            echo "- Last updated: ${{ steps.timestamp.outputs.date }}"
+            echo ""
+            echo "## Data Sources"
+            echo "- **List-KR**: Korean-language website filters list"
+            echo "- **YousList**: Block filter for advertisements, mainly on Korean sites"
+            echo ""
+            echo "## Usage"
+            echo "Add this URL to your AdGuard DNS custom filters:"
+            echo "\`https://raw.githubusercontent.com/${{ github.repository }}/main/${{ env.FILTER_FILE }}\`"
+            echo ""
+            echo "## Auto-Update Schedule"
+            echo "This filter is automatically updated every hour to include the latest blocking rules from upstream sources."
+          } > filter-stats.md
 
           cat filter-stats.md
 
       - name: Upload filter as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: kakao-adblock-filter-${{ steps.timestamp.outputs.short_date }}
           path: |

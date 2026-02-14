@@ -8,9 +8,14 @@ assignees: ''
 
 ## Domain Information
 
+> Labels guidance: this template auto-applies `enhancement`,
+> `ad-domain`, and `needs-validation`.
+> Maintainers may adjust labels during triage.
+
 **Domain to be blocked:** `example.ad.kakao.com`
 
 **Service/App where you found this domain:**
+
 - [ ] KakaoTalk Desktop
 - [ ] KakaoTalk Mobile
 - [ ] Kakao Web Services
@@ -27,6 +32,7 @@ assignees: ''
 ## Validation Checklist
 
 **Before submitting, please verify:**
+
 - [ ] The domain contains 'kakao', 'daum', or related keywords
 - [ ] The domain is specifically for advertising/tracking (not legitimate services)
 - [ ] You've checked that blocking this domain doesn't break legitimate functionality
@@ -35,7 +41,8 @@ assignees: ''
 ## Additional Information
 
 **Network evidence (optional):**
-```
+
+```text
 <!-- Paste network request logs, browser dev tools output, etc. -->
 
 ```
@@ -44,6 +51,7 @@ assignees: ''
 <!-- Attach screenshots showing the ad or network requests -->
 
 **Browser/App version:**
+
 - Browser:
 - Version:
 - OS:
@@ -51,6 +59,7 @@ assignees: ''
 ## Domain Pattern Analysis
 
 **Help us improve pattern detection:**
+
 - Does this follow a known pattern? (e.g., `ad.*.kakao.com`, `track.*.daum.net`)
 - Are there similar domains that should also be blocked?
 - Any additional subdomains or variations you've noticed?
@@ -60,6 +69,7 @@ assignees: ''
 ### For Maintainers
 
 **Validation Tasks:**
+
 - [ ] DNS lookup confirms domain exists
 - [ ] Domain follows Kakao/Daum patterns
 - [ ] Domain matches ad/tracking keywords
@@ -74,8 +84,11 @@ assignees: ''
 ## About This Filter
 
 This filter uses a **precision-first approach**:
+
 - ✅ **BLOCKS**: Only confirmed advertising/tracking domains
 - ✅ **PRESERVES**: Essential Kakao services (login, payments, etc.)
 - ✅ **PHILOSOPHY**: Better to miss some ads than break legitimate functionality
 
-**Protected services:** kakao.com, accounts.kakao.com, pay.kakao.com, map.kakao.com, and [48 other essential domains](https://github.com/seonghobae/AdGuardDNS_KakaoAdBlock/blob/main/scripts/collect_kakao_domains.py#L109-L191).
+**Protected services:**
+kakao.com, accounts.kakao.com, pay.kakao.com, map.kakao.com, and
+[48 other essential domains](https://github.com/seonghobae/AdGuardDNS_KakaoAdBlock/blob/main/scripts/collect_kakao_domains.py#L109-L191).
