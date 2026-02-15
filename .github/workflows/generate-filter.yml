@@ -24,7 +24,6 @@ jobs:
   generate-filter:
     runs-on: ubuntu-latest
     permissions:
-      actions: write
       contents: write
       pull-requests: write
 
@@ -157,15 +156,6 @@ jobs:
             - Filter generation completed in CI
             - Syntax validation completed in CI
             - DNS validator tests completed in CI
-
-      - name: Trigger required checks for automation PR branch
-        if: steps.changes.outputs.changed == 'true' && steps.cpr.outputs.pull-request-number != ''
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh workflow run ".github/workflows/test.yml" --repo "${{ github.repository }}" --ref "automation/kakao-filter-update"
-          gh workflow run ".github/workflows/r-cmd-check.yml" --repo "${{ github.repository }}" --ref "automation/kakao-filter-update"
-          gh workflow run ".github/workflows/codeql.yml" --repo "${{ github.repository }}" --ref "automation/kakao-filter-update"
 
       - name: Enable auto-merge for automation PR
         if: steps.changes.outputs.changed == 'true' && steps.cpr.outputs.pull-request-number != ''
