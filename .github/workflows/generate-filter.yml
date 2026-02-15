@@ -6,9 +6,16 @@ on:
     - cron: '0 * * * *'
   workflow_dispatch:
   push:
+    branches:
+      - 'develop'
+      - 'main'
     paths:
       - 'scripts/**'
       - '.github/workflows/generate-filter.yml'
+
+concurrency:
+  group: generate-filter-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   FILTER_FILE: 'kakao-adblock-filter.txt'
