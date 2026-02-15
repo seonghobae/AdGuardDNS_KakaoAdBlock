@@ -1,0 +1,52 @@
+name: R CMD check
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main", "develop"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  r-cmd-check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Detect R package metadata
+        id: metadata
+        run: |
+          if [ -f DESCRIPTION ]; then
+            echo "has_description=true" >> "$GITHUB_OUTPUT"
+            echo "DESCRIPTION found; running R CMD check."
+          else
+            echo "has_description=false" >> "$GITHUB_OUTPUT"
+            echo "No DESCRIPTION found; skipping R CMD check."
+          fi
+
+      - name: Setup R
+        if: steps.metadata.outputs.has_description == 'true'
+        uses: r-lib/actions/setup-r@6f6e5bc62fba3a704f74e7ad7ef7676c5c6a2590 # v2
+
+      - name: Install R package dependencies
+        if: steps.metadata.outputs.has_description == 'true'
+        uses: r-lib/actions/setup-r-dependencies@6f6e5bc62fba3a704f74e7ad7ef7676c5c6a2590 # v2
+        with:
+          extra-packages: any::rcmdcheck
+          needs: check
+
+      - name: Run R CMD check
+        if: steps.metadata.outputs.has_description == 'true'
+        uses: r-lib/actions/check-r-package@6f6e5bc62fba3a704f74e7ad7ef7676c5c6a2590 # v2
