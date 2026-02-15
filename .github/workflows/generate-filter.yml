@@ -179,7 +179,7 @@ jobs:
             echo ""
             echo "## Usage"
             echo "Add this URL to your AdGuard DNS custom filters:"
-            echo "\`https://raw.githubusercontent.com/${{ github.repository }}/main/${{ env.FILTER_FILE }}\`"
+            echo "\`https://raw.githubusercontent.com/${{ github.repository }}/develop/${{ env.FILTER_FILE }}\`"
             echo ""
             echo "## Auto-Update Schedule"
             echo "This filter is automatically updated every hour to include the latest blocking rules from upstream sources."
