@@ -24,6 +24,7 @@ jobs:
   generate-filter:
     runs-on: ubuntu-latest
     permissions:
+      actions: write
       contents: write
       pull-requests: write
 
@@ -136,6 +137,7 @@ jobs:
           fi
 
       - name: Create or update pull request
+        id: cpr
         if: steps.changes.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
         with:
@@ -155,6 +157,22 @@ jobs:
             - Filter generation completed in CI
             - Syntax validation completed in CI
             - DNS validator tests completed in CI
+
+      - name: Trigger required checks for automation PR branch
+        if: steps.changes.outputs.changed == 'true' && steps.cpr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run ".github/workflows/test.yml" --repo "${{ github.repository }}" --ref "automation/kakao-filter-update"
+          gh workflow run ".github/workflows/r-cmd-check.yml" --repo "${{ github.repository }}" --ref "automation/kakao-filter-update"
+          gh workflow run ".github/workflows/codeql.yml" --repo "${{ github.repository }}" --ref "automation/kakao-filter-update"
+
+      - name: Enable auto-merge for automation PR
+        if: steps.changes.outputs.changed == 'true' && steps.cpr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge --repo "${{ github.repository }}" "${{ steps.cpr.outputs.pull-request-number }}" --auto --squash --delete-branch
 
       - name: Create release asset info
         if: steps.changes.outputs.changed == 'true'
