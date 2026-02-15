@@ -19,6 +19,8 @@ concurrency:
 
 env:
   FILTER_FILE: 'kakao-adblock-filter.txt'
+  AUTOMATION_APP_ID: ${{ secrets.AUTOMATION_APP_ID }}
+  AUTOMATION_APP_PRIVATE_KEY: ${{ secrets.AUTOMATION_APP_PRIVATE_KEY }}
 
 jobs:
   generate-filter:
@@ -45,6 +47,14 @@ jobs:
 
       - name: Setup uv
         uses: astral-sh/setup-uv@eac588ad8def6316056a12d4907a9d4d84ff7a3b # v7.3.0
+
+      - name: Create GitHub App token (optional)
+        id: app-token
+        if: env.AUTOMATION_APP_ID != '' && env.AUTOMATION_APP_PRIVATE_KEY != ''
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ env.AUTOMATION_APP_ID }}
+          private-key: ${{ env.AUTOMATION_APP_PRIVATE_KEY }}
 
       - name: Get current timestamp
         id: timestamp
@@ -140,7 +150,7 @@ jobs:
         if: steps.changes.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.app-token.outputs.token != '' && steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
           branch: automation/kakao-filter-update
           base: develop
           delete-branch: true
@@ -158,11 +168,18 @@ jobs:
             - DNS validator tests completed in CI
 
       - name: Enable auto-merge for automation PR
-        if: steps.changes.outputs.changed == 'true' && steps.cpr.outputs.pull-request-number != ''
+        if: steps.changes.outputs.changed == 'true' && steps.cpr.outputs.pull-request-number != '' && steps.app-token.outputs.token != ''
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           gh pr merge --repo "${{ github.repository }}" "${{ steps.cpr.outputs.pull-request-number }}" --auto --squash --delete-branch
+
+      - name: Note missing GitHub App token
+        if: steps.changes.outputs.changed == 'true' && steps.cpr.outputs.pull-request-number != '' && steps.app-token.outputs.token == ''
+        run: |
+          echo "GitHub App token secrets are not configured."
+          echo "The automation PR was created with GITHUB_TOKEN, so PR-triggered workflows may not run."
+          echo "Configure secrets AUTOMATION_APP_ID and AUTOMATION_APP_PRIVATE_KEY to enable fully self-gating updates."
 
       - name: Create release asset info
         if: steps.changes.outputs.changed == 'true'
