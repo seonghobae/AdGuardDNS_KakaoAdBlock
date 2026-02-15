@@ -91,4 +91,4 @@ This filter uses a **precision-first approach**:
 
 **Protected services:**
 kakao.com, accounts.kakao.com, pay.kakao.com, map.kakao.com, and
-[48 other essential domains](https://github.com/seonghobae/AdGuardDNS_KakaoAdBlock/blob/main/scripts/collect_kakao_domains.py#L109-L191).
+[48 other essential domains](https://github.com/seonghobae/AdGuardDNS_KakaoAdBlock/blob/develop/scripts/collect_kakao_domains.py#L109-L191).
