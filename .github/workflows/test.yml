@@ -2,7 +2,7 @@ name: DNS Validation Tests
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, automation/kakao-filter-update ]
     paths:
       - 'scripts/**.py'
       - 'tests/**.py'

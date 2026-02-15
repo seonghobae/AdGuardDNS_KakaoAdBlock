@@ -2,7 +2,7 @@ name: R CMD check
 
 on:
   push:
-    branches: ["main", "develop"]
+    branches: ["main", "develop", "automation/kakao-filter-update"]
   pull_request:
     branches: ["main", "develop"]
   workflow_dispatch:
